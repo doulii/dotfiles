@@ -91,6 +91,7 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
+                         ;; ("nongnu" . "https://elpa.nongnu.org/nongnu/") ;; for eat, no need now
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -266,6 +267,15 @@ leader-key是general定义的leader-key
 (defun aq/set-evil-key (s f)
   (evil-define-key 'normal 'global (kbd (concat "<leader>" s)) f))
 
+(defun aq/set-evil-keymap (s map)
+  (map-keymap
+   (lambda (event binding)
+     (when (commandp binding)
+       ;; event 可能是 number 或 symbol，要转换成字符串
+       (let ((key-str (single-key-description event)))
+         (aq/set-evil-key (concat s key-str) binding))))
+   map))
+
 ;; origami toggle使用origami-forward-toggle-node
 (defun aq/evil-fold-origami-forward (mode-actions)
   (if (eq (caar mode-actions) 'origami-mode)
@@ -322,7 +332,11 @@ leader-key是general定义的leader-key
   (aq/set-evil-key "jw" 'ace-jump-word-mode)
   ;; (aq/set-evil-key "pg" 'go-playground)
   (aq/set-evil-key "p" 'persp-key-map)
+  ;; (aq/set-evil-key "c" claude-code-command-map)
+  (aq/set-evil-key "rb" 'revert-buffer)
+  ;; (aq/set-evil-keymap "l" line-edit-command-map) ;; 需要package ready以后才能读取变量
   (aq/set-evil-key ";" 'evil-repeat-find-char))
+
 
 ;; (use-package evil-collection
 ;;   :after evil
@@ -376,6 +390,7 @@ leader-key是general定义的leader-key
 ** MacOS
 #+begin_src emacs-lisp
 (setq mac-command-modifier 'meta)
+(setq mac-option-modifier 'super)
 #+end_src
 
 * OrgMode
@@ -478,6 +493,7 @@ leader-key是general定义的leader-key
 	(require 'org-tempo)
 	(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 	(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+	(add-to-list 'org-structure-template-alist '("go" . "src go"))
 	(add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
 	(add-to-list 'org-structure-template-alist '("sql" . "src sql"))
 	(add-to-list 'org-structure-template-alist '("py" . "src python")))
@@ -554,10 +570,19 @@ macOS依赖 =pngpaste=
 
 * EShell
 
-* VTerm
+* Terminal
+
 #+begin_src emacs-lisp
+;; run vterm with C-c p x v
 (use-package vterm)
+
+;; eat
+;; need non-gnu elpa
+;; 不好用，退格键不能删除
+;; (use-package eat)
 #+end_src
+
+
 * 程序开发
 
 需求
@@ -1103,9 +1128,77 @@ termux-language-server 通过venv安装, 并添加到PATH
    :server-id "termux"))
 #+end_src
 
+** GenAI
+
+*** cluade
+
+#+begin_src emacs-lisp
+;; dependency
+(use-package inheritenv
+  :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
+(use-package monet
+  :vc (:url "https://github.com/stevemolitor/monet" :rev :newest))
+
+(defun my-claude-display-right (buffer)
+  "Display Claude buffer in right side window."
+  (display-buffer buffer '((display-buffer-in-side-window)
+                           (side . right)
+                           (window-width . 75))))
+(add-to-list 'display-buffer-alist
+                 '("^\\*claude"
+                   (display-buffer-in-side-window)
+                   (side . right)
+                   (window-width . 75)))
+;; install claude-code.el
+(use-package claude-code :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :config
+  (setq claude-code-terminal-backend 'vterm)
+  ;; (setq claude-code-display-window-fn #'my-claude-display-right)
+
+  ;; optional IDE integration with Monet
+  (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+  (monet-mode 1)
+
+  (aq/set-evil-key "c" 'claude-code-command-map)
+
+  ;; (claude-code-mode)
+  ;; :bind-keymap ("<leader> c" . claude-code-command-map)
+  :bind-keymap ("C-c c" . claude-code-command-map)
+
+  ;; Optionally define a repeat map so that "M" will cycle thru Claude auto-accept/plan/confirm modes after invoking claude-code-cycle-mode / C-c M.
+  ;; :bind
+  ;; (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode))
+  )
+#+end_src
+
+使用方式，一下使用默认 ~C-c c~ 作为快捷键前缀
+- ~C-c c c~ 启动claude
+  - ~C-c c d~ 启动claude，指定目录，默认是使用project.el的目录
+- ~C-c c k~ 退出claude
+- ~C-c c s~ 使用minibuffer发送prompt
+- ~C-c c x~ 发送prompt，包含文件和行数
+- ~C-c c r~ 发送选中区域，如果无选中，则发送整个buffer
+  - ~C-u C-c c r~ 额外指定context
+- ~C-c c o~ 发送当前buffer对应的文件
+- ~C-c c e~ 修复flymake/flycheck的错误 ~claude-code-fix-error-at-point~
+- ~C-c c t~ 显示隐藏claude buffer ~claude-code-toggle~
+- ~C-c c b~ 调整到claude buffer，隐藏的的会显示
+- ~C-c c z~ readonly模式，用于复制文本
+- 响应claude的提示
+  - ~C-c c y~ 回车
+  - ~C-c c n~ 回复no
+  - ~C-c c 1~ 选型1，其他2/3同理
+
+- ~claude-code-continue~
+- ~claude-code-resume~
+
+
 ** TODO 其他配置
 - Flycheck
 - 远程开发Tramp
+
+
 * EAF
 
 #+begin_src emacs-lisp
@@ -1177,6 +1270,15 @@ TODO
              (concat user-emacs-directory "my-plugins")
              t)
 (require 'my-plugin)
+  ;; :load-path (concat user-emacs-directory "my-plugins")
+
+;; C-c l 通常用于lsp
+(use-package line-edit
+  :load-path load-path
+  :config
+  (aq/set-evil-keymap "l" line-edit-command-map))
+  ;; :bind-keymap ("C-c l" . line-edit-command-map)
+
 ;; (use-package my-plugin
 ;;   :load-path (concat user-emacs-directory "my-plugins/my-plugin.el"))
 #+end_src

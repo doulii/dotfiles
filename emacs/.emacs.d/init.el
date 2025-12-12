@@ -68,6 +68,7 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
+                         ;; ("nongnu" . "https://elpa.nongnu.org/nongnu/") ;; for eat, no need now
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -210,6 +211,15 @@
 (defun aq/set-evil-key (s f)
   (evil-define-key 'normal 'global (kbd (concat "<leader>" s)) f))
 
+(defun aq/set-evil-keymap (s map)
+  (map-keymap
+   (lambda (event binding)
+     (when (commandp binding)
+       ;; event 可能是 number 或 symbol，要转换成字符串
+       (let ((key-str (single-key-description event)))
+         (aq/set-evil-key (concat s key-str) binding))))
+   map))
+
 ;; origami toggle使用origami-forward-toggle-node
 (defun aq/evil-fold-origami-forward (mode-actions)
   (if (eq (caar mode-actions) 'origami-mode)
@@ -266,7 +276,11 @@
   (aq/set-evil-key "jw" 'ace-jump-word-mode)
   ;; (aq/set-evil-key "pg" 'go-playground)
   (aq/set-evil-key "p" 'persp-key-map)
+  ;; (aq/set-evil-key "c" claude-code-command-map)
+  (aq/set-evil-key "rb" 'revert-buffer)
+  ;; (aq/set-evil-keymap "l" line-edit-command-map) ;; 需要package ready以后才能读取变量
   (aq/set-evil-key ";" 'evil-repeat-find-char))
+
 
 ;; (use-package evil-collection
 ;;   :after evil
@@ -306,6 +320,7 @@
   (exec-path-from-shell-initialize))
 
 (setq mac-command-modifier 'meta)
+(setq mac-option-modifier 'super)
 
 (defun aq/org-mode-setup ()
     (org-indent-mode)
@@ -404,6 +419,7 @@
 	(require 'org-tempo)
 	(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 	(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+	(add-to-list 'org-structure-template-alist '("go" . "src go"))
 	(add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
 	(add-to-list 'org-structure-template-alist '("sql" . "src sql"))
 	(add-to-list 'org-structure-template-alist '("py" . "src python")))
@@ -455,7 +471,13 @@
                                 0 (* r (ceiling (nth 1 time) r))
                                 (nthcdr 2 time))))))
 
+;; run vterm with C-c p x v
 (use-package vterm)
+
+;; eat
+;; need non-gnu elpa
+;; 不好用，退格键不能删除
+;; (use-package eat)
 
 (use-package projectile
   :diminish projectile-mode
@@ -771,6 +793,44 @@ current buffer, killing it."
                                    "*.install" "makepkg.conf" "*.ebuild" "*.eclass" "color.map" "make.conf")
    :server-id "termux"))
 
+;; dependency
+(use-package inheritenv
+  :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
+(use-package monet
+  :vc (:url "https://github.com/stevemolitor/monet" :rev :newest))
+
+(defun my-claude-display-right (buffer)
+  "Display Claude buffer in right side window."
+  (display-buffer buffer '((display-buffer-in-side-window)
+                           (side . right)
+                           (window-width . 75))))
+(add-to-list 'display-buffer-alist
+                 '("^\\*claude"
+                   (display-buffer-in-side-window)
+                   (side . right)
+                   (window-width . 75)))
+;; install claude-code.el
+(use-package claude-code :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :config
+  (setq claude-code-terminal-backend 'vterm)
+  ;; (setq claude-code-display-window-fn #'my-claude-display-right)
+
+  ;; optional IDE integration with Monet
+  (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+  (monet-mode 1)
+
+  (aq/set-evil-key "c" 'claude-code-command-map)
+
+  ;; (claude-code-mode)
+  ;; :bind-keymap ("<leader> c" . claude-code-command-map)
+  :bind-keymap ("C-c c" . claude-code-command-map)
+
+  ;; Optionally define a repeat map so that "M" will cycle thru Claude auto-accept/plan/confirm modes after invoking claude-code-cycle-mode / C-c M.
+  ;; :bind
+  ;; (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode))
+  )
+
 ;; See https://github.com/emacs-eaf/emacs-application-framework/wiki/Customization
 ;; (use-package eaf
 ;;   :init ((setq eaf-python-command "~/.emacs.d/site-lisp/emacs-application-framework/venv/bin/python3"))
@@ -817,5 +877,14 @@ current buffer, killing it."
              (concat user-emacs-directory "my-plugins")
              t)
 (require 'my-plugin)
+  ;; :load-path (concat user-emacs-directory "my-plugins")
+
+;; C-c l 通常用于lsp
+(use-package line-edit
+  :load-path load-path
+  :config
+  (aq/set-evil-keymap "l" line-edit-command-map))
+  ;; :bind-keymap ("C-c l" . line-edit-command-map)
+
 ;; (use-package my-plugin
 ;;   :load-path (concat user-emacs-directory "my-plugins/my-plugin.el"))
