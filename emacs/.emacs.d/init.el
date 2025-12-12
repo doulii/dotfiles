@@ -208,20 +208,20 @@
 ;;        "jl" 'ace-jump-line-mode
 ;;        "jw" 'ace-jump-word-mode
 ;;        ";" 'evil-repeat-find-char))
-(defun aq/set-evil-key (s f)
+(defun doulii/set-evil-key (s f)
   (evil-define-key 'normal 'global (kbd (concat "<leader>" s)) f))
 
-(defun aq/set-evil-keymap (s map)
+(defun doulii/set-evil-keymap (s map)
   (map-keymap
    (lambda (event binding)
      (when (commandp binding)
        ;; event 可能是 number 或 symbol，要转换成字符串
        (let ((key-str (single-key-description event)))
-         (aq/set-evil-key (concat s key-str) binding))))
+         (doulii/set-evil-key (concat s key-str) binding))))
    map))
 
 ;; origami toggle使用origami-forward-toggle-node
-(defun aq/evil-fold-origami-forward (mode-actions)
+(defun doulii/evil-fold-origami-forward (mode-actions)
   (if (eq (caar mode-actions) 'origami-mode)
       (cons
        (car mode-actions)
@@ -235,7 +235,7 @@
   (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo-tree"))))
 
 ;; fix dap-debug 可能修改 treemacs--in-this-buffer 的问题
-(defun aq/toggle-treemacs ()
+(defun doulii/toggle-treemacs ()
   (interactive)
   (setq-default treemacs--in-this-buffer nil)
   (treemacs))
@@ -247,39 +247,39 @@
   (setq evil-want-keybinding nil)
   ;;  :after (evil-leader)
   :config
-  (setq evil-fold-list (mapcar #'aq/evil-fold-origami-forward evil-fold-list))
+  (setq evil-fold-list (mapcar #'doulii/evil-fold-origami-forward evil-fold-list))
   (evil-mode 1)
   ;; (evil-set-leader '(normal motion) ";")
   (evil-set-leader 'normal ";")
-  ;; (aq/set-evil-key "ee" 'treemacs)
-  (aq/set-evil-key "ee" 'aq/toggle-treemacs)
-  (aq/set-evil-key "ewe" 'treemacs-edit-workspaces)
-  (aq/set-evil-key "es" 'treemacs-switch-workspace)
-  (aq/set-evil-key "en" 'neotree-toggle)
-  (aq/set-evil-key "q" 'quit-window)
-  (aq/set-evil-key "x" 'delete-window)
-  (aq/set-evil-key "k" 'kill-buffer)
-  (aq/set-evil-key "b" 'counsel-ibuffer)
-  (aq/set-evil-key "s" 'save-buffer)
-  (aq/set-evil-key "dd" 'dap-debug-last)
-  (aq/set-evil-key "dr" 'dap-debug-restart)
-  (aq/set-evil-key "dq" 'dap-disconnect)
-  (aq/set-evil-key "db" 'dap-breakpoint-toggle)
-  (aq/set-evil-key "dc" 'dap-continue)
-  (aq/set-evil-key "dn" 'dap-next)
-  (aq/set-evil-key "di" 'dap-step-in)
-  (aq/set-evil-key "do" 'dap-step-out)
-  (aq/set-evil-key "SPC" 'ace-jump-word-mode)
-  (aq/set-evil-key "jb" 'ace-jump-mode-pop-mark)
-  (aq/set-evil-key "jc" 'ace-jump-char-mode)
-  (aq/set-evil-key "jl" 'ace-jump-line-mode)
-  (aq/set-evil-key "jw" 'ace-jump-word-mode)
-  ;; (aq/set-evil-key "pg" 'go-playground)
-  (aq/set-evil-key "p" 'persp-key-map)
-  ;; (aq/set-evil-key "c" claude-code-command-map)
-  (aq/set-evil-key "rb" 'revert-buffer)
-  ;; (aq/set-evil-keymap "l" line-edit-command-map) ;; 需要package ready以后才能读取变量
-  (aq/set-evil-key ";" 'evil-repeat-find-char))
+  ;; (doulii/set-evil-key "ee" 'treemacs)
+  (doulii/set-evil-key "ee" 'doulii/toggle-treemacs)
+  (doulii/set-evil-key "ewe" 'treemacs-edit-workspaces)
+  (doulii/set-evil-key "es" 'treemacs-switch-workspace)
+  (doulii/set-evil-key "en" 'neotree-toggle)
+  (doulii/set-evil-key "q" 'quit-window)
+  (doulii/set-evil-key "x" 'delete-window)
+  (doulii/set-evil-key "k" 'kill-buffer)
+  (doulii/set-evil-key "b" 'counsel-ibuffer)
+  (doulii/set-evil-key "s" 'save-buffer)
+  (doulii/set-evil-key "dd" 'dap-debug-last)
+  (doulii/set-evil-key "dr" 'dap-debug-restart)
+  (doulii/set-evil-key "dq" 'dap-disconnect)
+  (doulii/set-evil-key "db" 'dap-breakpoint-toggle)
+  (doulii/set-evil-key "dc" 'dap-continue)
+  (doulii/set-evil-key "dn" 'dap-next)
+  (doulii/set-evil-key "di" 'dap-step-in)
+  (doulii/set-evil-key "do" 'dap-step-out)
+  (doulii/set-evil-key "SPC" 'ace-jump-word-mode)
+  (doulii/set-evil-key "jb" 'ace-jump-mode-pop-mark)
+  (doulii/set-evil-key "jc" 'ace-jump-char-mode)
+  (doulii/set-evil-key "jl" 'ace-jump-line-mode)
+  (doulii/set-evil-key "jw" 'ace-jump-word-mode)
+  ;; (doulii/set-evil-key "pg" 'go-playground)
+  (doulii/set-evil-key "p" 'persp-key-map)
+  ;; (doulii/set-evil-key "c" claude-code-command-map)
+  (doulii/set-evil-key "rb" 'revert-buffer)
+  ;; (doulii/set-evil-keymap "l" line-edit-command-map) ;; 需要package ready以后才能读取变量
+  (doulii/set-evil-key ";" 'evil-repeat-find-char))
 
 
 ;; (use-package evil-collection
@@ -322,7 +322,7 @@
 (setq mac-command-modifier 'meta)
 (setq mac-option-modifier 'super)
 
-(defun aq/org-mode-setup ()
+(defun doulii/org-mode-setup ()
     (org-indent-mode)
     (variable-pitch-mode 1)
     (visual-line-mode 1))
@@ -330,7 +330,7 @@
     ;;  (auto-fill-mode 0)
 
 (use-package org
-	:hook (org-mode . aq/org-mode-setup)
+	:hook (org-mode . doulii/org-mode-setup)
 	:config
 	(setq org-edit-src-content-indentation 0)
 	(setq org-ellipsis " ▾")
@@ -397,13 +397,13 @@
 
 
 ;; org mode 居中显示
-(defun aq/org-mode-visual-fill ()
+(defun doulii/org-mode-visual-fill ()
 	(setq visual-fill-column-width 120
 	visual-fill-column-center-text t)
 	(visual-fill-column-mode))
 (use-package visual-fill-column
 	:defer t
-	:hook (org-mode . aq/org-mode-visual-fill))
+	:hook (org-mode . doulii/org-mode-visual-fill))
 
 (setq org-babel-python-command "python3")
 (with-eval-after-load 'org
@@ -441,7 +441,7 @@
 
 
 
-(defun aq/org-babel-tangle-config ()
+(defun doulii/org-babel-tangle-config ()
   ;;  (when (string-equal (file-name-directory buffer-file-name)
   ;;                      (expand-file-name user-emacs-directory))
   (when (string-equal (file-name-nondirectory
@@ -452,17 +452,17 @@
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
 
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'aq/org-babel-tangle-config)))
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'doulii/org-babel-tangle-config)))
 
 ;; 获取上次发版的版本号
-(defun aq/application-publish-notification/get-last-version ()
+(defun doulii/application-publish-notification/get-last-version ()
   (save-excursion
     (goto-char (point-min))
     (re-search-forward "/-/compare/[a-z0-9\\.]*\\.\\.\\.\\\([a-z0-9\\.]*\\\)\\\W" nil t 1)
     (match-string-no-properties 1)))
 
 ;; 生成发版时间，最早为两分钟以后，取整到5分钟的整数倍
-(defun aq/application-publish-notification/publish-time ()
+(defun doulii/application-publish-notification/publish-time ()
   (let ((time (decode-time (time-add (current-time) 120)))
         (r 5))
     (format-time-string "%Y/%-m/%-d - %H:%M"
@@ -574,7 +574,7 @@
 ;; (use-package neotree)
 ;; (global-set-key (kbd "C-c f e") 'neotree-toggle)
 
-(defun aq/neotree-follow ()
+(defun doulii/neotree-follow ()
   "Auto update neotree to follow current file."
   (when (neo-global--window-exists-p)
     (neotree-find buffer-file-name)))
@@ -589,13 +589,13 @@
   (setq neo-smart-open t))
 ;; (setq projectile-switch-project-action #'neotree-projectile-action))
 ;; :hook
-;; (buffer-list-update . aq/neotree-follow))
+;; (buffer-list-update . doulii/neotree-follow))
 
 (use-package treesit-auto
   :config
   (global-treesit-auto-mode))
 
-(defun aq/lsp-mode-setup ()
+(defun doulii/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   (lsp-headerline-breadcrumb-mode)
   (lsp-enable-which-key-integration))
@@ -618,7 +618,7 @@
          (meson-mode . lsp-deferred)
          (typescript-mode . lsp-deferred)
          (vue-mode . lsp-deferred)
-         (lsp-mode . aq/lsp-mode-setup)))
+         (lsp-mode . doulii/lsp-mode-setup)))
          ;; (scheme-mode . lsp-deferred)
 ;; (lsp-mode . lsp-enable-which-key-integration)))
 ;;  :config (lsp-enable-which-key-integration t))
@@ -686,14 +686,14 @@
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
-(defun aq/buf-generate ()
+(defun doulii/buf-generate ()
   "run buf generate for proto"
   (interactive)
   (shell-command "buf generate"))
 (use-package protobuf-mode
   :config (setq c-basic-offset 2)
-  :bind (("C-c b" . 'aq/buf-generate)))
-;;(global-set-key (kbd "C-c b") 'aq/buf-generate)
+  :bind (("C-c b" . 'doulii/buf-generate)))
+;;(global-set-key (kbd "C-c b") 'doulii/buf-generate)
 
 ;; (use-package dap-dlv-go)
 (require 'dap-dlv-go)
@@ -765,7 +765,7 @@
 
 (use-package sqlite-mode
   :config
-  (defun aq/sqlite-view-file-magically ()
+  (defun doulii/sqlite-view-file-magically ()
     "Runs `sqlite-mode-open-file' on the file name visited by the
 current buffer, killing it."
     (require 'sqlite-mode)
@@ -773,7 +773,7 @@ current buffer, killing it."
       (kill-current-buffer)
       (sqlite-mode-open-file file-name)))
 
-  (add-to-list 'magic-mode-alist '("SQLite format 3\x00" . aq/sqlite-view-file-magically)))
+  (add-to-list 'magic-mode-alist '("SQLite format 3\x00" . doulii/sqlite-view-file-magically)))
 
 (use-package auctex
   :config
@@ -820,7 +820,7 @@ current buffer, killing it."
   (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
   (monet-mode 1)
 
-  (aq/set-evil-key "c" 'claude-code-command-map)
+  (doulii/set-evil-key "c" 'claude-code-command-map)
 
   ;; (claude-code-mode)
   ;; :bind-keymap ("<leader> c" . claude-code-command-map)
@@ -883,7 +883,7 @@ current buffer, killing it."
 (use-package line-edit
   :load-path load-path
   :config
-  (aq/set-evil-keymap "l" line-edit-command-map))
+  (doulii/set-evil-keymap "l" line-edit-command-map))
   ;; :bind-keymap ("C-c l" . line-edit-command-map)
 
 ;; (use-package my-plugin
