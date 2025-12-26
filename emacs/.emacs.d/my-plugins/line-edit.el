@@ -1,20 +1,11 @@
 ;;; line-edit.el --- Minor-mode: Inline edit a single line from another file -*- lexical-binding: t; -*-
 
-;; Description:
-;;  - Copies a line from a target file into the current buffer for editing
-;;  - Supports navigating lines, editing, and committing back to the target buffer
-;;  - Provides commands to show current info and jump to the target line
 
-(defvar-local line-edit-target-file nil)
 (defvar-local line-edit-target-buffer nil)
-(defvar-local line-edit-line-num 1)
-(defvar-local line-edit-editing nil)
-(defvar-local line-edit-current-pos nil)
+(defvar-local line-edit-line-num -1)
 
-(defun line-edit--ensure-target-buffer (file)
-  (or (find-buffer-visiting file)
-      (find-file-noselect file)))
 
+;; 读取目标buffer的目标行
 (defun line-edit--read-line (buf line)
   (with-current-buffer buf
     (save-excursion
@@ -22,6 +13,47 @@
       (forward-line (1- line))
       (if (eobp) "" (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
 
+(defun line-edit-refresh ()
+  (interactive)
+  (unless line-edit-target-buffer (user-error "No target file"))
+  (delete-region (line-beginning-position) (line-end-position))
+  (insert (line-edit--read-line line-edit-target-buffer
+								line-edit-line-num)))
+
+(defun line-edit--ensure-target-buffer (file)
+  (or (find-buffer-visiting file)
+      (find-file-noselect file)))
+
+(defun line-edit-open-file (file)
+  (interactive
+   (list
+    (read-file-name "File: ")))
+    ;; (read-number "Line: " 1)
+  (setq line-edit-line-num 1)
+  (setq line-edit-target-buffer (line-edit--ensure-target-buffer file))
+  (line-edit-refresh))
+
+(defun line-edit-quit ()
+  (interactive)
+  (setq line-edit-target-buffer nil)
+  (setq line-edit-line-num -1)
+  (message "Line-edit quit"))
+
+
+(defun line-edit--change-line (d)
+  (setq line-edit-line-num (max 1 (+ line-edit-line-num d)))
+  (line-edit-refresh))
+
+(defun line-edit-next-line (&optional arg)
+  (interactive "p")
+  (line-edit--change-line (or arg 1)))
+
+(defun line-edit-previous-line (&optional arg)
+  (interactive "p")
+  (line-edit--change-line (- (or arg 1))))
+
+
+;; 替换目标buffer的指定line为指定text
 (defun line-edit--replace-line (buf line text)
   (with-current-buffer buf
     (save-excursion
@@ -33,68 +65,78 @@
         (goto-char beg)
         (insert text)))))
 
-(defun line-edit-refresh ()
-  (interactive)
-  (unless line-edit-target-file (user-error "Target file not set"))
-  (let* ((buf (line-edit--ensure-target-buffer line-edit-target-file))
-         (content (line-edit--read-line buf line-edit-line-num)))
-    (setq line-edit-current-pos (point))
-    (delete-region (line-beginning-position) (line-end-position))
-    (insert content)
-    (setq line-edit-editing nil)))
-
-(defun line-edit--change-line (d)
-  (when line-edit-editing (line-edit-commit-line))
-  (setq line-edit-line-num (max 1 (+ line-edit-line-num d)))
-  (line-edit-refresh))
-
-(defun line-edit-next-line (&optional arg)
-  "Move to next line in target file. With ARG, move ARG lines."
-  (interactive "p") ;; read prefix argument, default 1
-  (line-edit--change-line (or arg 1)))
-
-(defun line-edit-previous-line (&optional arg)
-  "Move to previous line in target file. With ARG, move ARG lines."
-  (interactive "p")
-  (line-edit--change-line (- (or arg 1))))
-
-(defun line-edit-toggle-edit ()
-  (interactive)
-  (setq line-edit-editing (not line-edit-editing))
-  (if line-edit-editing
-      (message "Edit mode enabled: modify the line and press C to commit")
-    (message "Edit mode disabled")))
+;; 获取当前buffer的当前行
+(defun line-edit--current-line-text ()
+  (buffer-substring-no-properties
+   (line-beginning-position)
+   (line-end-position)))
 
 (defun line-edit-commit-line ()
   (interactive)
-  (unless line-edit-editing (user-error "Not in edit mode"))
-  (let ((text (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
-        (buf (line-edit--ensure-target-buffer line-edit-target-file)))
-    (line-edit--replace-line buf line-edit-line-num text)
-    (message "Line committed to target buffer (not saved yet)"))
-  (setq line-edit-editing nil))
+  (unless line-edit-target-buffer (user-error "No target file"))
+  (line-edit--replace-line line-edit-target-buffer
+						   line-edit-line-num
+						   (line-edit--current-line-text))
+  (message "Line committed to target buffer (not saved yet)"))
 
-(defun line-edit-quit ()
+
+;; insert text at line begin
+(defun line-edit--insert-text (line)
+  (unless line-edit-target-buffer (user-error "No target file"))
+  (let ((text (line-edit--current-line-text)))
+	(with-current-buffer line-edit-target-buffer
+	  (save-excursion
+		(goto-char (point-min))
+		(message "forward to %s" (1- line))
+		(forward-line (1- line))
+		(insert text)
+		(insert "\n")))))
+
+;; 在当前行后插入文本，并将光标移动到下一行，即插入的行
+(defun line-edit-insert-after ()
   (interactive)
-  (setq line-edit-target-file nil)
-  (setq line-edit-target-buffer nil)
-  (setq line-edit-line-num 1)
-  (setq line-edit-current-pos nil)
-  (message "Line-edit cleared"))
+  (line-edit--insert-text (1+ line-edit-line-num))
+  (setq line-edit-line-num (1+ line-edit-line-num)))
 
-;; ---------------- Minor mode ----------------
+;; 在当前行前插入文本，光标保持在当前行，但是line-num会加一
+(defun line-edit-insert-before ()
+  (interactive)
+  (line-edit--insert-text line-edit-line-num)
+  (setq line-edit-line-num (1+ line-edit-line-num)))
+
+
+(defun line-edit-show-info ()
+  (interactive)
+  (if line-edit-target-buffer
+      (message "Current line-edit info: buffer=%s, target buffer=%s, line=%d"
+               (buffer-name) line-edit-target-buffer line-edit-line-num)
+    (message "Line-edit not active")))
+
+(defun line-edit-jump-to-target ()
+  (interactive)
+  (unless line-edit-target-buffer (user-error "No target file"))
+  (let ((buf line-edit-target-buffer)
+		(line line-edit-line-num))
+	(switch-to-buffer line-edit-target-buffer)
+	(goto-char (point-min))
+	(forward-line (1- line))
+	(message "Jumped to target buffer %s line %d" buf line)))
+
+
 (defvar line-edit-command-map
   (let ((map (make-sparse-keymap)))
-	;; Bind commands using (kbd ...) for consistency
-	(define-key map (kbd "o") 'line-edit-open-file)
+	(define-key map (kbd "f") 'line-edit-open-file)
 	(define-key map (kbd "n") 'line-edit-next-line)
 	(define-key map (kbd "p") 'line-edit-previous-line)
+	;; (define-key map (kbd "G") 'line-edit-goto-line)
 	(define-key map (kbd "e") 'line-edit-toggle-edit)
-	(define-key map (kbd "c") 'line-edit-commit-line)
 	(define-key map (kbd "r") 'line-edit-refresh)
 	(define-key map (kbd "q") 'line-edit-quit)
 	(define-key map (kbd "i") 'line-edit-show-info)
 	(define-key map (kbd "j") 'line-edit-jump-to-target)
+	(define-key map (kbd "c") 'line-edit-commit-line)
+	(define-key map (kbd "o") 'line-edit-insert-after)
+	(define-key map (kbd "O") 'line-edit-insert-before)
 	map)
   "Keymap for line-edit commands.")
 
@@ -105,35 +147,6 @@
   "Line-edit: Inline edit a line from another file."
   :lighter " LE"
   :keymap line-edit-minor-mode-map)
-
-(defun line-edit-open-file (file line)
-  (interactive
-   (list
-    (read-file-name "File: ")
-    (read-number "Line: " 1)))
-  (setq line-edit-target-file (expand-file-name file))
-  (setq line-edit-line-num line)
-  (setq line-edit-target-buffer (line-edit--ensure-target-buffer file))
-  (line-edit-refresh))
-
-;; ---------------- Additional commands ----------------
-(defun line-edit-show-info ()
-  "Show current line-edit info: buffer / file / line." 
-  (interactive)
-  (if line-edit-target-file
-      (message "Current line-edit info: buffer=%s, file=%s, line=%d"
-               (buffer-name) line-edit-target-file line-edit-line-num)
-    (message "Line-edit not active")))
-
-(defun line-edit-jump-to-target ()
-  "Jump to the target file's corresponding line."
-  (interactive)
-  (unless line-edit-target-file (user-error "Line-edit not active"))
-  (let ((buf (line-edit--ensure-target-buffer line-edit-target-file)))
-    (switch-to-buffer buf)
-    (goto-char (point-min))
-    (forward-line (1- line-edit-line-num))
-    (message "Jumped to target file %s line %d" line-edit-target-file line-edit-line-num)))
 
 (provide 'line-edit)
 ;;; line-edit.el ends here

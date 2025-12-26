@@ -4,11 +4,12 @@
 (tool-bar-mode -1)
 (tooltip-mode -1)
 (set-fringe-mode 10)
-(menu-bar-mode -1)
+;; (menu-bar-mode -1)
+(menu-bar-mode t)
 ;; (setq visible-bell t)
 
 ;; 窗口无边框
-;; (add-to-list 'default-frame-alist '(undecorated . t))
+(add-to-list 'default-frame-alist '(undecorated . t))
 
 
 ;; Themes
@@ -50,6 +51,12 @@
 ;; (add-to-list 'default-frame-alist '(font . "WenQuanYi Zen Hei"))
 ;; (add-to-list 'default-frame-alist '(font . "WenQuanYi Zen Hei Mono-16"))
 ;; (add-to-list 'default-frame-alist '(font . "YaHei Consolas Hybrid-16"))
+;; 中文（汉字）
+;; (dolist (charset '(han cjk-misc bopomofo))
+;;   (set-fontset-font
+;;    t charset
+;;    (font-spec :family "崇羲篆體" :size 25)))
+
 
 ;; enable by `M-x variable-pitch-mode`
 (set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height 150)
@@ -276,7 +283,7 @@
   (doulii/set-evil-key "jw" 'ace-jump-word-mode)
   ;; (doulii/set-evil-key "pg" 'go-playground)
   (doulii/set-evil-key "p" 'persp-key-map)
-  ;; (doulii/set-evil-key "c" claude-code-command-map)
+  ;; (doulii/set-evil-keymap "c" claude-code-command-map)
   (doulii/set-evil-key "rb" 'revert-buffer)
   ;; (doulii/set-evil-keymap "l" line-edit-command-map) ;; 需要package ready以后才能读取变量
   (doulii/set-evil-key ";" 'evil-repeat-find-char))
@@ -498,7 +505,8 @@
         (cons "meson.build"
               (cons "CMakeLists.txt" projectile-project-root-files-bottom-up)))
   (add-to-list 'projectile-ignored-projects "/opt/homebrew/")
-  (add-to-list 'projectile-ignored-projects "~/"))
+  (add-to-list 'projectile-ignored-projects "~/")
+  (add-to-list 'projectile-globally-ignored-files "#*#"))
 
 ;;  (setq projectile-switch-project-action 'neotree-projectile-action))
 (use-package counsel-projectile
@@ -820,8 +828,7 @@ current buffer, killing it."
   (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
   (monet-mode 1)
 
-  (doulii/set-evil-key "c" 'claude-code-command-map)
-
+  (doulii/set-evil-keymap "c" claude-code-command-map)
   ;; (claude-code-mode)
   ;; :bind-keymap ("<leader> c" . claude-code-command-map)
   :bind-keymap ("C-c c" . claude-code-command-map)
@@ -885,6 +892,16 @@ current buffer, killing it."
   :config
   (doulii/set-evil-keymap "l" line-edit-command-map))
   ;; :bind-keymap ("C-c l" . line-edit-command-map)
+
+;; (evil-define-state line-edit
+;;   "My custom evil state."
+;;   :tag " <L> "
+;;   :message "-- MY STATE --"
+;;   :enable (normal)          ;; 继承 normal state 的行为
+;;   :keymap (make-sparse-keymap))
+;; (evil-define-key 'line-edit evil-line-edit-state-map
+;;   (kbd "j") #'line-edit-next-line
+;;   (kbd "k") #'line-edit-previous-line)
 
 ;; (use-package my-plugin
 ;;   :load-path (concat user-emacs-directory "my-plugins/my-plugin.el"))

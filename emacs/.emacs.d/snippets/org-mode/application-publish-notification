@@ -3,11 +3,11 @@
 # key: <pa
 # --
 
-`(org-entry-get nil "git_url" t)`/-/compare/`(aq/application-publish-notification/get-last-version)`...$1
+`(org-entry-get nil "git_url" t)`/-/compare/`(doulii/application-publish-notification/get-last-version)`...$1
 服务名：`(org-entry-get nil "app" t)`
 版本号：$1
 操作人：`(org-entry-get nil "user" t)`
-发布时间：`(aq/application-publish-notification/publish-time)`
+发布时间：`(doulii/application-publish-notification/publish-time)`
 发布功能：
 1. $2
 灰度范围：滚动发布
