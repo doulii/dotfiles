@@ -384,7 +384,12 @@ leader-key是general定义的leader-key
 #+end_src
 
 * 系统设置
+
 同步系统PATH设置
+
++为了启动速度，exec-path-from-shell参考文档以非交互方式启动shell，如果无法获取到换进变量，确认是否配置在zshrc或者bashrc，迁移到 ~~/.zshenv~ 或 ~~/.profile~ 即可。 [[https://github.com/purcell/exec-path-from-shell][doc]]+
+golang的环境变量使用 ~go env GOPATH~ ，但是在 ~.zshenv~ 中找不到go，待解决
+
 #+begin_src emacs-lisp
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns x))
@@ -392,6 +397,7 @@ leader-key是general定义的leader-key
   (dolist (var '("LANG" "LC_CTYPE" "LC_ALL"))
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
+  ;; (setq exec-path-from-shell-arguments nil)
 #+end_src
 
 ** MacOS
@@ -404,106 +410,106 @@ leader-key是general定义的leader-key
 
 #+begin_src emacs-lisp
 (defun doulii/org-mode-setup ()
-    (org-indent-mode)
-    (variable-pitch-mode 1)
-    (visual-line-mode 1))
-    ;;  (setq evil-auto-indent nil))
-    ;;  (auto-fill-mode 0)
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (visual-line-mode 1))
+;;  (setq evil-auto-indent nil))
+;;  (auto-fill-mode 0)
 
 (use-package org
-	:hook (org-mode . doulii/org-mode-setup)
-	:config
-	(setq org-edit-src-content-indentation 0)
-	(setq org-ellipsis " ▾")
-	(setq org-hide-emphasis-markers t)
+  :hook (org-mode . doulii/org-mode-setup)
+  :config
+  (setq org-edit-src-content-indentation 0)
+  (setq org-ellipsis " ▾")
+  (setq org-hide-emphasis-markers t)
 
-	(setq org-agenda-start-with-log-mode t)
-	(setq org-log-done 'time)
-	(setq org-log-into-drawer t)
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
 
-	(setq org-todo-keywords
-	'((sequence "TODO(t)" "DOING(i)" "PENDING(p)" "|" "DONE(d!)" "REJECTED(r)")
-		(sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+  (setq org-todo-keywords
+		'((sequence "TODO(t)" "DOING(i)" "PENDING(p)" "|" "DONE(d!)" "REJECTED(r)")
+		  (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
 
-	;; TODO
-	;; Custom agenda view
-	;; https://github.com/daviwil/emacs-from-scratch/blob/5e1f99448e32852277e2d274ce2057d55b8c7aaf/init.el#L300
-	;; Capture templates
-	(setq org-capture-templates
-	`(("t" "Tasks / Projects")
-		("tt" "Task" entry (file+olp "~/Nextcloud/OrgMode/Tasks.org" "Inbox")
-		"* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)))
+  ;; TODO
+  ;; Custom agenda view
+  ;; https://github.com/daviwil/emacs-from-scratch/blob/5e1f99448e32852277e2d274ce2057d55b8c7aaf/init.el#L300
+  ;; Capture templates
+  (setq org-capture-templates
+		`(("t" "Tasks / Projects")
+		  ("tt" "Task" entry (file+olp "~/Nextcloud/OrgMode/Tasks.org" "Inbox")
+		   "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)))
 
-	;; (setq org-agenda-files '("~/Nextcloud/OrgMode/wiki/editors/emacs/emacs-from-scratch.org"))
-	;; (setq org-agenda-files '("~/Nextcloud/OrgMode/"))
-	(setq org-agenda-files (directory-files-recursively "~/Nextcloud/OrgMode/" "\\.org$"))
-	(setq org-directory "~/Nextcloud/OrgMode/")
+  ;; (setq org-agenda-files '("~/Nextcloud/OrgMode/wiki/editors/emacs/emacs-from-scratch.org"))
+  ;; (setq org-agenda-files '("~/Nextcloud/OrgMode/"))
+  (setq org-agenda-files (directory-files-recursively "~/Nextcloud/OrgMode/" "\\.org$"))
+  (setq org-directory "~/Nextcloud/OrgMode/")
 
   ;; LaTeX preview scale
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
 
-	;; org mode heading font size
-	(dolist (face '((org-level-1 . 1.2)
-					(org-level-2 . 1.1)
-					(org-level-3 . 1.05)
-					(org-level-4 . 1.0)
-					(org-level-5 . 1.0)
-					(org-level-6 . 1.0)
-					(org-level-7 . 1.0)
-					(org-level-8 . 1.0)))
+  ;; org mode heading font size
+  (dolist (face '((org-level-1 . 1.2)
+				  (org-level-2 . 1.1)
+				  (org-level-3 . 1.05)
+				  (org-level-4 . 1.0)
+				  (org-level-5 . 1.0)
+				  (org-level-6 . 1.0)
+				  (org-level-7 . 1.0)
+				  (org-level-8 . 1.0)))
 	;;  (message "%s" (cdr face)))
 	;;  (set-face-attribute (car face) nil :font "YaHei Consolas Hybrid" :weight 'regular :height (cdr face)))
 	(set-face-attribute (car face) nil :font "FiraCode Nerd Font" :weight 'regular :height (cdr face)))
 
   ;; column view font size
-	(set-face-attribute 'org-column nil :height 150)
+  (set-face-attribute 'org-column nil :height 150)
 
-	;; Ensure that anything that should be fixed-pitch in Org files appears that way
-	(set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-	(set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-	(set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-	(set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-	(set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-	(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-	(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-	(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-	(set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-	(set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-	(set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+  (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
 
 (use-package org-bullets
-	:hook (org-mode . org-bullets-mode)
-	:custom
-	(org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 
 ;; org mode 居中显示
 (defun doulii/org-mode-visual-fill ()
-	(setq visual-fill-column-width 120
-	visual-fill-column-center-text t)
-	(visual-fill-column-mode))
+  (setq visual-fill-column-width 120
+		visual-fill-column-center-text t)
+  (visual-fill-column-mode))
 (use-package visual-fill-column
-	:defer t
-	:hook (org-mode . doulii/org-mode-visual-fill))
+  :defer t
+  :hook (org-mode . doulii/org-mode-visual-fill))
 
 (setq org-babel-python-command "python3")
 (with-eval-after-load 'org
-	(org-babel-do-load-languages
-	'org-babel-load-languages
-	'((emacs-lisp . t)
-      ;; (go . t)
-      (scheme . t)
-		(python . t)))
-	(setq org-confirm-babel-evaluate nil))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     ;; (go . t)
+     (scheme . t)
+	 (python . t)))
+  (setq org-confirm-babel-evaluate nil))
 
 (with-eval-after-load 'org
-	(require 'org-tempo)
-	(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-	(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-	(add-to-list 'org-structure-template-alist '("go" . "src go"))
-	(add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
-	(add-to-list 'org-structure-template-alist '("sql" . "src sql"))
-	(add-to-list 'org-structure-template-alist '("py" . "src python")))
+  (require 'org-tempo)
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("go" . "src go"))
+  (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
+  (add-to-list 'org-structure-template-alist '("sql" . "src sql"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python")))
 
 ;; org mode (Refer: org mode guide)
 (global-set-key (kbd "C-c l") #'org-store-link)
@@ -514,7 +520,10 @@ leader-key是general定义的leader-key
 (use-package org-appear
   :after org
   :config (setq org-appear-autolinks t)
-	:hook (org-mode . org-appear-mode))
+  :hook (org-mode . org-appear-mode))
+;; (use-package org-expose-emphasis-markers
+;;   :after org
+;; 	:hook (org-mode . org-expose-emphasis-markers-mode))
 #+end_src
 
 ** 图片
@@ -661,25 +670,46 @@ macOS依赖 =pngpaste=
 
 #+begin_src emacs-lisp
 (use-package yasnippet
-  :config (yas-global-mode 1))
+  :config
+  (yas-reload-all)
+  (yas-global-mode 1))
 (use-package yasnippet-snippets
   :after yasnippet)
-#+end_src
+  #+end_src
 
 ** 自动补全
 #+begin_src emacs-lisp
-  ;; :config
-  ;; (add-to-list 'company-backends '(company-capf company-yasnippet))
+;; :config
+;; (add-to-list 'company-backends '(company-capf company-yasnippet))
+;; (defun doulii/tab-complete ()
+;;   (interactive)
+;;   (cond
+;;    ;; 1. snippet 展开 / 跳字段
+;;    ((and (bound-and-true-p yas-minor-mode)
+;;          (or (yas-expand)
+;;              (yas-next-field))))
+;;    ;; 2. company 补全
+;;    ((company-manual-begin))
+;;    ;; 3. fallback
+;;    (t
+;;     (indent-for-tab-command))))
+
 (use-package company
   :after lsp-mode
   :hook (lsp-mode . company-mode)
   :bind (:map company-active-map
-         ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
-         ("<tab>" . company-indent-or-complete-common))
+              ("<tab>" . company-complete-selection))
   :custom
   (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
+  (company-idle-delay 0.0)
+  (company-tooltip-align-annotations t)
+  (company-selection-wrap-around t)
+  (company-backends '((company-capf :with company-yasnippet))))
+;; :bind (:map company-active-map
+;;        ("<tab>" . company-complete-selection))
+;;       (:map lsp-mode-map
+;;        ("<tab>" . company-indent-or-complete-common))
+
 (use-package company-box
   :hook (company-mode . company-box-mode))
 #+end_src
@@ -752,10 +782,16 @@ macOS依赖 =pngpaste=
   (lsp-headerline-breadcrumb-mode)
   (lsp-enable-which-key-integration))
 
+(defun doulii/lsp-completion-hook ()
+  (when lsp-completion-mode
+    (set (make-local-variable 'company-backends)
+         (remq 'company-capf company-backends))))
+
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :init
   (setq lsp-keymap-prefix "C-c l")
+  (setq lsp-completion-provider :none)
   :config
   ;; ignore golang stdlib
   (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]libexec[/\\\\]")
@@ -771,7 +807,9 @@ macOS依赖 =pngpaste=
          (typescript-mode . lsp-deferred)
          (vue-mode . lsp-deferred)
          (lsp-mode . doulii/lsp-mode-setup)))
-         ;; (scheme-mode . lsp-deferred)
+;; (lsp-completion-mode . doulii/lsp-completion-hook)
+
+;; (scheme-mode . lsp-deferred)
 ;; (lsp-mode . lsp-enable-which-key-integration)))
 ;;  :config (lsp-enable-which-key-integration t))
 
@@ -802,9 +840,9 @@ macOS依赖 =pngpaste=
 #+end_src
 
 
- 当使用dap-debug时，有可能会设置treemacs--in-this-buffer变量的global值，导致treemacs-projectile-follow-mode失效
- 可以通过使用下面的watch treemacs--in-this-buffer方法来确认debug时设置该变量的调用堆栈，但是看起来加了watcher且wacther中打印trace就正常，不打印trace就会复现，待排查
- 先在打开treemacs的过程中，清空下treemacs--in-this-buffer，有空再排查
+当使用dap-debug时，有可能会设置treemacs--in-this-buffer变量的global值，导致treemacs-projectile-follow-mode失效
+可以通过使用下面的watch treemacs--in-this-buffer方法来确认debug时设置该变量的调用堆栈，但是看起来加了watcher且wacther中打印trace就正常，不打印trace就会复现，待排查
+先在打开treemacs的过程中，清空下treemacs--in-this-buffer，有空再排查
 
 #+begin_src emacs-lisp :tangle nil
 (defun doulii/my-treemacs-in-this-buffer-watcher ()
@@ -831,7 +869,7 @@ macOS依赖 =pngpaste=
  (lambda (symbol newval operation where)
    (message "treemacs--in-this-buffer changed: %s → %s (operation: %s) %s" (symbol-value symbol) newval operation where)
    (message "buffer %s" (buffer-name))))
-   ;; (message "Backtrace:\n%s" (with-output-to-string (backtrace)))))
+;; (message "Backtrace:\n%s" (with-output-to-string (backtrace)))))
 
 (remove-variable-watcher
  'treemacs--in-this-buffer
@@ -858,7 +896,7 @@ macOS依赖 =pngpaste=
 1. ~projectile-configure-project~ 运行 ~cmake -S . -B build~
 2. ~projectile-run-project~ 可以运行应用 ~./build/myapp~
 3. 配置launch.json，示例
-    #+begin_src json
+   #+begin_src json
     {
         "version": "0.2.0",
         "configurations": [
@@ -876,7 +914,7 @@ macOS依赖 =pngpaste=
             }
         ]
     }
-    #+end_src
+   #+end_src
 4. ~<leader> d d~ 启动dap-debug
 
 *** meson项目配置
@@ -885,7 +923,7 @@ macOS依赖 =pngpaste=
 1. ~projectile-compile-project~ 运行 ~meson compile -C build~
 1. ~projectile-run-project~ 可以运行应用 ~./build/myapp~
 1. 配置launch.json，示例
-    #+begin_src json
+   #+begin_src json
     {
         "version": "0.2.0",
         "configurations": [
@@ -903,11 +941,12 @@ macOS依赖 =pngpaste=
             }
         ]
     }
-    #+end_src
+   #+end_src
 1. ~<leader> d d~ 启动dap-debug
 1. 指定compiler，设置环境变量 ~CC=clang~ ，运行 ~meson setup build~
 
 ** Python
+
 #+begin_src emacs-lisp
 (use-package auto-virtualenvwrapper)
 ;; :hook
@@ -930,7 +969,26 @@ macOS依赖 =pngpaste=
 (setq dap-python-debugger 'debugpy)
 #+end_src
 
-*** TODO https://github.com/purcell/envrc
+#+begin_src emacs-lisp :tangle no
+;; (use-package envrc
+;;   :hook (python-mode . envrc-global-mode))
+
+;; 需要先安装direnv https://direnv.net
+;; (use-package envrc
+;;   :hook (after-init . envrc-global-mode))
+(use-package direnv
+  :config
+  (direnv-mode))
+#+end_src
+
+*** TODO direnv
+
+https://github.com/purcell/envrc
+https://github.com/wbolster/emacs-direnv
+
+*** 运行python
+~C-c C-c~ 执行buffer
+~C-c C-p~ 启动python解释器
 
 ** Golang
 使用lsp-mode，去除go-mode?
@@ -1153,10 +1211,10 @@ termux-language-server 通过venv安装, 并添加到PATH
                            (side . right)
                            (window-width . 75))))
 (add-to-list 'display-buffer-alist
-                 '("^\\*claude"
-                   (display-buffer-in-side-window)
-                   (side . right)
-                   (window-width . 75)))
+             '("^\\*claude"
+               (display-buffer-in-side-window)
+               (side . right)
+               (window-width . 75)))
 ;; install claude-code.el
 (use-package claude-code :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
@@ -1199,7 +1257,6 @@ termux-language-server 通过venv安装, 并添加到PATH
 
 - ~claude-code-continue~
 - ~claude-code-resume~
-
 
 ** TODO 其他配置
 - Flycheck
@@ -1277,14 +1334,14 @@ TODO
              (concat user-emacs-directory "my-plugins")
              t)
 (require 'my-plugin)
-  ;; :load-path (concat user-emacs-directory "my-plugins")
+;; :load-path (concat user-emacs-directory "my-plugins")
 
 ;; C-c l 通常用于lsp
 (use-package line-edit
   :load-path load-path
   :config
   (doulii/set-evil-keymap "l" line-edit-command-map))
-  ;; :bind-keymap ("C-c l" . line-edit-command-map)
+;; :bind-keymap ("C-c l" . line-edit-command-map)
 
 ;; (evil-define-state line-edit
 ;;   "My custom evil state."
