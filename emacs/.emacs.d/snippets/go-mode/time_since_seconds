@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: time since seconds
+# key: tss
+# --
+
+time.Since($1).Seconds()$0

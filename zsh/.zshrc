@@ -111,8 +111,8 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 # alias vim="lvim"
-alias vim="nvim"
-alias vi="nvim"
+# alias vim="nvim"
+# alias vi="nvim"
 
 zstyle ':completion:*:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 

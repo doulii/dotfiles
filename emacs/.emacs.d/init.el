@@ -281,6 +281,7 @@
   (doulii/set-evil-key "jc" 'ace-jump-char-mode)
   (doulii/set-evil-key "jl" 'ace-jump-line-mode)
   (doulii/set-evil-key "jw" 'ace-jump-word-mode)
+  (doulii/set-evil-key "mb" 'magit-blame)
   ;; (doulii/set-evil-key "pg" 'go-playground)
   (doulii/set-evil-key "p" 'persp-key-map)
   ;; (doulii/set-evil-keymap "c" claude-code-command-map)
@@ -472,9 +473,9 @@
     (re-search-forward "/-/compare/[a-z0-9\\.]*\\.\\.\\.\\\([a-z0-9\\.]*\\\)\\\W" nil t 1)
     (match-string-no-properties 1)))
 
-;; 生成发版时间，最早为两分钟以后，取整到5分钟的整数倍
+;; 生成发版时间，最早为四分钟以后，取整到5分钟的整数倍
 (defun doulii/application-publish-notification/publish-time ()
-  (let ((time (decode-time (time-add (current-time) 120)))
+  (let ((time (decode-time (time-add (current-time) 240)))
         (r 5))
     (format-time-string "%Y/%-m/%-d - %H:%M"
                         (org-encode-time
@@ -505,9 +506,8 @@
   :config
   ;; add cmake sub project
   ;; https://github.com/bbatsov/projectile/issues/1130#issuecomment-1123237339
-  (setq projectile-project-root-files-bottom-up
-        (cons "meson.build"
-              (cons "CMakeLists.txt" projectile-project-root-files-bottom-up)))
+  (dolist (e '("package.json" "meson.build" "CMakeLists.txt" ))
+        (add-to-list 'projectile-project-root-files-bottom-up e))
   (add-to-list 'projectile-ignored-projects "/opt/homebrew/")
   (add-to-list 'projectile-ignored-projects "~/")
   (add-to-list 'projectile-globally-ignored-files "#*#"))
@@ -573,7 +573,9 @@
   (company-idle-delay 0.0)
   (company-tooltip-align-annotations t)
   (company-selection-wrap-around t)
-  (company-backends '((company-capf :with company-yasnippet))))
+  (company-backends '((company-capf :with company-yasnippet)))
+  )
+
 ;; :bind (:map company-active-map
 ;;        ("<tab>" . company-complete-selection))
 ;;       (:map lsp-mode-map

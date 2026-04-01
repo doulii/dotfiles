@@ -54,7 +54,7 @@ Plug 'nathanaelkane/vim-indent-guides'
 Plug 'kshenoy/vim-signature'
 Plug 'airblade/vim-gitgutter'
 
-Plug 'ycm-core/YouCompleteMe'
+" Plug 'ycm-core/YouCompleteMe'
 " Plug 'prabirshrestha/vim-lsp'
 " Plug 'mattn/vim-lsp-settings'
 Plug 'SirVer/ultisnips'
