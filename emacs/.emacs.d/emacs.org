@@ -35,6 +35,7 @@
 (setq-default tab-width 4)
 
 (column-number-mode)
+(setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode t)
 
 ;; 某些mode下禁用line numbers
@@ -79,7 +80,6 @@
 (set-locale-environment "zh_CN.UTF-8")
 #+end_src
 
-
 ** encoding
 
 避免文件包含中文时，写入会提示选择coding system
@@ -88,6 +88,17 @@
 (prefer-coding-system 'utf-8)
 (setq-default buffer-file-coding-system 'utf-8)
 #+end_src
+
+** Custom file
+
+move customize to seperate file
+
+#+begin_src emacs-lisp
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file)
+;; (load-file custom-file)
+#+end_src
+
 * 包管理
 #+begin_src emacs-lisp
 ;; MELPA community packages
@@ -1309,15 +1320,8 @@ termux-language-server 通过venv安装, 并添加到PATH
 #+end_src
 ** misc
 
-#+begin_src emacs-lisp
-
-;; C-x C-e to execute sexp
-;; C-h f describe-function
-
-;; move customize to seperate file
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
-#+end_src
+~C-x C-e~ to execute sexp
+~C-h f~ describe-function
 
 TODO
 - [X] evil命令

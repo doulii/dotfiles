@@ -29,6 +29,7 @@
 (setq-default tab-width 4)
 
 (column-number-mode)
+(setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode t)
 
 ;; 某些mode下禁用line numbers
@@ -66,6 +67,10 @@
 
 (prefer-coding-system 'utf-8)
 (setq-default buffer-file-coding-system 'utf-8)
+
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file)
+;; (load-file custom-file)
 
 ;; MELPA community packages
 ;; Initialize package sources
@@ -907,13 +912,6 @@ current buffer, killing it."
 ;; (require 'eaf-markmap)
 
 (use-package lorem-ipsum)
-
-;; C-x C-e to execute sexp
-;; C-h f describe-function
-
-;; move customize to seperate file
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
 
 (add-to-list 'load-path
              (concat user-emacs-directory "my-plugins")
