@@ -10,8 +10,8 @@
 (tool-bar-mode -1)
 (tooltip-mode -1)
 (set-fringe-mode 10)
-;; (menu-bar-mode -1)
-(menu-bar-mode t)
+(menu-bar-mode -1)
+;; (menu-bar-mode t)
 ;; (setq visible-bell t)
 
 ;; 窗口无边框
@@ -644,6 +644,7 @@ macOS依赖 =pngpaste=
 
 ;;  (setq projectile-switch-project-action 'neotree-projectile-action))
 (use-package counsel-projectile
+  :after projectile
   :config
   (projectile-known-projects) ;; counsel-projectile启动时不能正确list project，先临时fix，等修复 https://github.com/ericdanan/counsel-projectile/issues/189
   (counsel-projectile-mode))
@@ -1211,7 +1212,7 @@ termux-language-server 通过venv安装, 并添加到PATH
 
 *** cluade
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ;; dependency
 (use-package inheritenv
   :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))

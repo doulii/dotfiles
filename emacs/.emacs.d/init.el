@@ -4,8 +4,8 @@
 (tool-bar-mode -1)
 (tooltip-mode -1)
 (set-fringe-mode 10)
-;; (menu-bar-mode -1)
-(menu-bar-mode t)
+(menu-bar-mode -1)
+;; (menu-bar-mode t)
 ;; (setq visible-bell t)
 
 ;; 窗口无边框
@@ -519,6 +519,7 @@
 
 ;;  (setq projectile-switch-project-action 'neotree-projectile-action))
 (use-package counsel-projectile
+  :after projectile
   :config
   (projectile-known-projects) ;; counsel-projectile启动时不能正确list project，先临时fix，等修复 https://github.com/ericdanan/counsel-projectile/issues/189
   (counsel-projectile-mode))
@@ -840,43 +841,6 @@ current buffer, killing it."
    :activation-fn (lsp-activate-on "build.sh" "*.subpackage.sh" "PKGBUILD"
                                    "*.install" "makepkg.conf" "*.ebuild" "*.eclass" "color.map" "make.conf")
    :server-id "termux"))
-
-;; dependency
-(use-package inheritenv
-  :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
-(use-package monet
-  :vc (:url "https://github.com/stevemolitor/monet" :rev :newest))
-
-(defun my-claude-display-right (buffer)
-  "Display Claude buffer in right side window."
-  (display-buffer buffer '((display-buffer-in-side-window)
-                           (side . right)
-                           (window-width . 75))))
-(add-to-list 'display-buffer-alist
-             '("^\\*claude"
-               (display-buffer-in-side-window)
-               (side . right)
-               (window-width . 75)))
-;; install claude-code.el
-(use-package claude-code :ensure t
-  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-  :config
-  (setq claude-code-terminal-backend 'vterm)
-  ;; (setq claude-code-display-window-fn #'my-claude-display-right)
-
-  ;; optional IDE integration with Monet
-  (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
-  (monet-mode 1)
-
-  (doulii/set-evil-keymap "c" claude-code-command-map)
-  ;; (claude-code-mode)
-  ;; :bind-keymap ("<leader> c" . claude-code-command-map)
-  :bind-keymap ("C-c c" . claude-code-command-map)
-
-  ;; Optionally define a repeat map so that "M" will cycle thru Claude auto-accept/plan/confirm modes after invoking claude-code-cycle-mode / C-c M.
-  ;; :bind
-  ;; (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode))
-  )
 
 ;; See https://github.com/emacs-eaf/emacs-application-framework/wiki/Customization
 ;; (use-package eaf
