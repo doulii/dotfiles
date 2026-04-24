@@ -15,7 +15,7 @@
 ;; (setq visible-bell t)
 
 ;; 窗口无边框
-(add-to-list 'default-frame-alist '(undecorated . t))
+;; (add-to-list 'default-frame-alist '(undecorated . t))
 
 
 ;; Themes
@@ -56,7 +56,7 @@
 #+begin_src emacs-lisp
 ;; (set-face-attribute 'default nil :font "Fira Code Retina" :height 280)
 ;; (set-face-attribute 'default nil :font "WenQuanYi Zen Hei Mono" :height 160)
-(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 150)
+(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 100)
 ;; (set-face-attribute 'default nil :font "YaHei Consolas Hybrid" :height 150)
 ;; (add-to-list 'default-frame-alist '(font . "Yahei Consolas Hybrid-12"))
 ;; (add-to-list 'default-frame-alist '(font . "WenQuanYi Zen Hei"))
@@ -70,8 +70,8 @@
 
 
 ;; enable by `M-x variable-pitch-mode`
-(set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height 150)
-(set-face-attribute 'variable-pitch nil :font "YaHei Consolas Hybrid" :height 150 :weight 'regular)
+(set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height 100)
+(set-face-attribute 'variable-pitch nil :font "YaHei Consolas Hybrid" :height 100 :weight 'regular)
 
 #+end_src
 

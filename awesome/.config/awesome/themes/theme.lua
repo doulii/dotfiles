@@ -3,12 +3,14 @@
 --    By Adrian C. (anrxc)   --
 -------------------------------
 
+local config_path = require("gears.filesystem").get_configuration_dir()
 local themes_path = require("gears.filesystem").get_themes_dir()
 local dpi = require("beautiful.xresources").apply_dpi
 
 -- {{{ Main
 local theme = {}
-theme.wallpaper = themes_path .. "zenburn/zenburn-background.png"
+-- theme.wallpaper = themes_path .. "zenburn/zenburn-background.png"
+theme.wallpaper = config_path .. "wallpaper/wallpaper.jpg"
 
 -- require media-gfx/feh
 -- theme.wallpaper_cmd = { "awsetbg -f .config/awesome/themes/awesome-wallpaper.png" }
