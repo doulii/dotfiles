@@ -1,0 +1,14 @@
+#!/bin/bash
+
+PKG=$1
+AUR_DIR=$HOME/aur
+
+echo "cloning package $PKG into $AUR_DIR"
+
+cd $AUR_DIR
+
+git clone "https://aur.archlinux.org/$PKG"
+
+# cd $PKG
+# makepkg -s
+# sudo pacman -U $PKG

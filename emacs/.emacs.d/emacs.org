@@ -56,7 +56,7 @@
 #+begin_src emacs-lisp
 ;; (set-face-attribute 'default nil :font "Fira Code Retina" :height 280)
 ;; (set-face-attribute 'default nil :font "WenQuanYi Zen Hei Mono" :height 160)
-(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 100)
+(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 150)
 ;; (set-face-attribute 'default nil :font "YaHei Consolas Hybrid" :height 150)
 ;; (add-to-list 'default-frame-alist '(font . "Yahei Consolas Hybrid-12"))
 ;; (add-to-list 'default-frame-alist '(font . "WenQuanYi Zen Hei"))
@@ -70,8 +70,8 @@
 
 
 ;; enable by `M-x variable-pitch-mode`
-(set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height 100)
-(set-face-attribute 'variable-pitch nil :font "YaHei Consolas Hybrid" :height 100 :weight 'regular)
+(set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height 150)
+(set-face-attribute 'variable-pitch nil :font "YaHei Consolas Hybrid" :height 150 :weight 'regular)
 
 #+end_src
 
@@ -1106,9 +1106,10 @@ references:
 run by =M-x slime=
 
 #+begin_src emacs-lisp
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
+(when (file-directory-p "~/quicklisp")
+  (load (expand-file-name "~/quicklisp/slime-helper.el"))
+  (setq inferior-lisp-program "sbcl"))
 ;; Replace "sbcl" with the path to your implementation
-(setq inferior-lisp-program "sbcl")
 #+end_src
 
 ** Scheme
@@ -1188,6 +1189,11 @@ current buffer, killing it."
   (setq-default TeX-master nil))
 #+end_src
 
+** Docker
+#+begin_src emacs-lisp
+(use-package dockerfile-mode
+  :ensure t)
+#+end_src
 ** Gentoo EBuild
 
 ebuild-mode不在elpa中, 需要使用系统包安装 ~sudo emerge --ask app-emacs/ebuild-mode~

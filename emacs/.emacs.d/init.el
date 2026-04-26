@@ -46,7 +46,7 @@
 
 ;; (set-face-attribute 'default nil :font "Fira Code Retina" :height 280)
 ;; (set-face-attribute 'default nil :font "WenQuanYi Zen Hei Mono" :height 160)
-(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 100)
+(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 150)
 ;; (set-face-attribute 'default nil :font "YaHei Consolas Hybrid" :height 150)
 ;; (add-to-list 'default-frame-alist '(font . "Yahei Consolas Hybrid-12"))
 ;; (add-to-list 'default-frame-alist '(font . "WenQuanYi Zen Hei"))
@@ -60,8 +60,8 @@
 
 
 ;; enable by `M-x variable-pitch-mode`
-(set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height 100)
-(set-face-attribute 'variable-pitch nil :font "YaHei Consolas Hybrid" :height 100 :weight 'regular)
+(set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height 150)
+(set-face-attribute 'variable-pitch nil :font "YaHei Consolas Hybrid" :height 150 :weight 'regular)
 
 (set-locale-environment "zh_CN.UTF-8")
 
@@ -779,9 +779,10 @@
   (setq gc-cons-threshold (* 100 1024 1024)
         read-process-output-max (* 1024 1024)))
 
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
+(when (file-directory-p "~/quicklisp")
+  (load (expand-file-name "~/quicklisp/slime-helper.el"))
+  (setq inferior-lisp-program "sbcl"))
 ;; Replace "sbcl" with the path to your implementation
-(setq inferior-lisp-program "sbcl")
 
 (use-package paredit
   :hook
@@ -829,6 +830,9 @@ current buffer, killing it."
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
   (setq-default TeX-master nil))
+
+(use-package dockerfile-mode
+  :ensure t)
 
 ;; (use-package ebuild-mode)
 (when (require 'ebuild-mode nil 'noerror)
