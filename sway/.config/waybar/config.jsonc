@@ -16,6 +16,7 @@
         "sway/window"
     ],
     "modules-right": [
+        "tray",
         "mpd",
         "idle_inhibitor",
         "pulseaudio",
@@ -24,13 +25,12 @@
         "cpu",
         "memory",
         "temperature",
-        "backlight",
-        "keyboard-state",
-        "sway/language",
+        // "backlight",
+        // "keyboard-state",
+        // "sway/language",
         "battery",
         "battery#bat2",
         "clock",
-        "tray",
         "custom/power"
     ],
     // Modules configuration
@@ -224,10 +224,11 @@
 		"menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
 		"menu-actions": {
 			"logout": "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'",
-			"shutdown": "shutdown",
+			"shutdown": "shutdown -h",
 			"reboot": "reboot",
 			"suspend": "systemctl suspend",
-			"hibernate": "systemctl hibernate"
+			"hibernate": "systemctl hibernate",
+			"lock": "gtklock"
 		}
     }
 }

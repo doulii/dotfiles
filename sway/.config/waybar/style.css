@@ -5,7 +5,8 @@
 }
 
 window#waybar {
-    background-color: rgba(43, 48, 59, 0.5);
+    /* background-color: rgba(43, 48, 59, 0.5); */
+    background-color: rgba(10, 48, 10, 0.5);
     border-bottom: 3px solid rgba(100, 114, 125, 0.5);
     color: #ffffff;
     transition-property: background-color;
@@ -114,12 +115,12 @@ button:hover {
 }
 
 #clock {
-    background-color: #64727D;
+    /* background-color: #64727D; */
 }
 
 #battery {
-    background-color: #ffffff;
-    color: #000000;
+    /* background-color: #ffffff; */
+    /* color: #000000; */
 }
 
 #battery.charging, #battery.plugged {
@@ -169,12 +170,12 @@ label:focus {
 }
 
 #cpu {
-    background-color: #2ecc71;
-    color: #000000;
+    /* background-color: #2ecc71; */
+    /* color: #000000; */
 }
 
 #memory {
-    background-color: #9b59b6;
+    /* background-color: #9b59b6; */
 }
 
 #disk {
@@ -186,7 +187,7 @@ label:focus {
 }
 
 #network {
-    background-color: #2980b9;
+    /* background-color: #2980b9; */
 }
 
 #network.disconnected {
@@ -194,13 +195,13 @@ label:focus {
 }
 
 #pulseaudio {
-    background-color: #f1c40f;
-    color: #000000;
+    /* background-color: #f1c40f; */
+    /* color: #000000; */
 }
 
 #pulseaudio.muted {
-    background-color: #90b1b1;
-    color: #2a5c45;
+    /* background-color: #90b1b1; */
+    /* color: #2a5c45; */
 }
 
 #wireplumber {
@@ -227,7 +228,7 @@ label:focus {
 }
 
 #temperature {
-    background-color: #f0932b;
+    /* background-color: #f0932b; */
 }
 
 #temperature.critical {
@@ -235,7 +236,7 @@ label:focus {
 }
 
 #tray {
-    background-color: #2980b9;
+    /* background-color: #2980b9; */
 }
 
 #tray > .passive {
@@ -248,12 +249,12 @@ label:focus {
 }
 
 #idle_inhibitor {
-    background-color: #2d3436;
+    /* background-color: #2d3436; */
 }
 
 #idle_inhibitor.activated {
-    background-color: #ecf0f1;
-    color: #2d3436;
+    /* background-color: #ecf0f1; */
+    /* color: #2d3436; */
 }
 
 #mpd {
@@ -327,10 +328,9 @@ label:focus {
 }
 
 
-
-#custom-power {
-	font-size: 20px;
-}
+/* #custom-power { */
+/* 	font-size: 20px; */
+/* } */
 
 menu {
 	border-radius: 15px;

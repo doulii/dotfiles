@@ -35,9 +35,14 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 # Example configuration:
 #
 # exec swayidle -w \
-#          timeout 300 'swaylock -f -c 000000' \
+#          timeout 300 'waylock -f -c 000000' \
 #          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
 #          before-sleep 'swaylock -f -c 000000'
+exec swayidle -w \
+         timeout 300 'gtklock' \
+         timeout 330 'swaymsg "output * dpms off"' \
+		 resume 'swaymsg "output * dpms on"' \
+         before-sleep 'gtklock'
 #
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -71,6 +76,8 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
     # Kill focused window
     # bindsym $mod+Shift+q kill
     bindsym $mod+Ctrl+x kill
+
+    # bindsym $mod+Ctrl+l gtklock
 
     # Start your launcher
     bindsym $mod+d exec $menu
@@ -130,7 +137,9 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
     bindsym $mod+t workspace Terminal
     bindsym $mod+w workspace Wechat
     bindsym $mod+p workspace Private
+    bindsym $mod+m workspace Music
     bindsym $mod+z workspace Misc
+    # bindsym $mod+g workspace Game
 
     # Move focused container to workspace
     bindsym $mod+Shift+1 move container to workspace number 1
@@ -147,6 +156,7 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
     bindsym $mod+Shift+t move container to workspace Terminal
     bindsym $mod+Shift+w move container to workspace Wechat
     bindsym $mod+Shift+p move container to workspace Private
+    bindsym $mod+Shift+m move container to workspace Music
     bindsym $mod+Shift+z move container to workspace Misc
     # Note: workspaces can have any name you want, not just numbers.
     # We just use 1-10 as the default.
@@ -156,8 +166,8 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
-    bindsym $mod+b splith
-    bindsym $mod+v splitv
+    # bindsym $mod+b splith
+    # bindsym $mod+v splitv
 
     # Switch the current container between different layout styles
     bindsym $mod+s layout stacking
@@ -168,7 +178,8 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
     bindsym $mod+f fullscreen
 
     # Toggle the current focus between tiling and floating mode
-    bindsym $mod+Shift+space floating toggle
+    # bindsym $mod+Shift+space floating toggle
+    bindsym $mod+Shift+f floating toggle
 
     # Swap focus between the tiling area and the floating area
     # bindsym $mod+space focus mode_toggle
@@ -254,7 +265,10 @@ include /etc/sway/config.d/*
 # auto start
 exec fcitx5
 
+default_border normal
+# default_floating_border none
 # mark xwayland window
+for_window [shell="xdg_shell"] default_border none
 for_window [shell="xwayland"] title_format "[XWayland] %title"
 
 
@@ -265,7 +279,7 @@ for_window [shell="xwayland"] title_format "[XWayland] %title"
 # `swaymsg -t get_tree`
 #
 assign [class="QQ"] workspace Private
-assign [class="wechat"] workspace Private
+# assign [class="wechat"] workspace Private
 # assign [app_id="kitty"] workspace Terminal
 assign [app_id="emacs"] workspace Editor
 
@@ -276,3 +290,14 @@ bindsym $mod+Tab workspace back_and_forth
 
 # Rofi
 bindsym $mod+Space exec rofi -show run
+# bindsym $mod+Space exec rofi -show combi -modes combi -combi-modes "window,drun,run"
+
+
+# Clipboard Manager
+exec wl-paste --type text --watch cliphist store
+exec wl-paste --type image --watch cliphist store
+# bindsym Ctrl+v exec cliphist list | rofi -dmenu | cliphist decode | wl-copy
+bindsym $mod+Shift+v exec cliphist list | rofi -dmenu | cliphist decode | wl-copy && wtype -M ctrl -M shift v -m shift -m ctrl
+bindsym $mod+v exec cliphist list | rofi -dmenu | cliphist decode | wl-copy && wtype -M ctrl v -m ctrl
+
+
