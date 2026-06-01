@@ -170,7 +170,7 @@ exec swayidle -w \
     # bindsym $mod+v splitv
 
     # Switch the current container between different layout styles
-    bindsym $mod+s layout stacking
+    # bindsym $mod+s layout stacking
     # bindsym $mod+w layout tabbed
     # bindsym $mod+e layout toggle split
 
@@ -265,10 +265,11 @@ include /etc/sway/config.d/*
 # auto start
 exec fcitx5
 
-default_border normal
+smart_borders on
+default_border pixel 4
 # default_floating_border none
 # mark xwayland window
-for_window [shell="xdg_shell"] default_border none
+for_window [shell="xdg_shell"] default_border pixel 4
 for_window [shell="xwayland"] title_format "[XWayland] %title"
 
 
@@ -282,6 +283,11 @@ assign [class="QQ"] workspace Private
 # assign [class="wechat"] workspace Private
 # assign [app_id="kitty"] workspace Terminal
 assign [app_id="emacs"] workspace Editor
+
+gaps inner 4
+# gaps outer 2
+gaps outer 0
+smart_gaps on
 
 
 # https://i3wm.org/docs/userguide.html#workspace_auto_back_and_forth 
