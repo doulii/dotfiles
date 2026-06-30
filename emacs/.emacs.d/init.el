@@ -1,3 +1,11 @@
+(load (locate-user-emacs-file "local.el") t)
+
+(defmacro doulii/get-config (name default)
+  (let ((sym (intern (concat "doulii/local/" (symbol-name name)))))
+    `(if (boundp ',sym)
+         ,sym
+       ,default)))
+
 (setq inhibit-startup-message t)
 
 (scroll-bar-mode -1)
@@ -44,10 +52,10 @@
 ;; 中文line break
 (setq word-wrap-by-category t)
 
-;; (set-face-attribute 'default nil :font "Fira Code Retina" :height 280)
-;; (set-face-attribute 'default nil :font "WenQuanYi Zen Hei Mono" :height 160)
-(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 150)
-;; (set-face-attribute 'default nil :font "YaHei Consolas Hybrid" :height 150)
+(setq doulii/font-size (doulii/get-config font-size 150))
+(setq doulii/font-family (doulii/get-config font-family "FiraCode Nerd Font"))
+
+(set-face-attribute 'default nil :font doulii/font-family :height doulii/font-size)
 ;; (add-to-list 'default-frame-alist '(font . "Yahei Consolas Hybrid-12"))
 ;; (add-to-list 'default-frame-alist '(font . "WenQuanYi Zen Hei"))
 ;; (add-to-list 'default-frame-alist '(font . "WenQuanYi Zen Hei Mono-16"))
@@ -60,17 +68,34 @@
 
 
 ;; enable by `M-x variable-pitch-mode`
-(set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height 150)
-(set-face-attribute 'variable-pitch nil :font "YaHei Consolas Hybrid" :height 150 :weight 'regular)
+(set-face-attribute 'fixed-pitch nil :family doulii/font-family :height doulii/font-size)
+(set-face-attribute 'variable-pitch nil :family doulii/font-family :height doulii/font-size :weight 'regular)
 
 (set-locale-environment "zh_CN.UTF-8")
 
 (prefer-coding-system 'utf-8)
 (setq-default buffer-file-coding-system 'utf-8)
 
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
-;; (load-file custom-file)
+(let ((custom-file-path (expand-file-name "custom.el" user-emacs-directory)))
+          ;; (make-directory custom-file-path t)
+          (setq custom-file custom-file-path)
+          (load custom-file))
+  ;; (load-file custom-file)
+
+;; (let ((backup-dir-path (expand-file-name "backups/" user-emacs-directory)))
+;;   (make-directory backup-dir-path t)
+;;   (setq backup-directory-alist '(("." . ,backup-dir-path))))
+;; (setq make-backup-files t)
+
+;; (let ((auto-save-dir-path (expand-file-name "auto-saves/" user-emacs-directory)))
+;;   (setq auto-save-file-name-transforms `((".*" ,auto-save-dir-path t)))
+;;   (make-directory auto-save-dir-path t))
+
+;; (make-directory "~/.emacs.d/backups/" t)
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups/")))
+
+;; (make-directory "~/.emacs.d/auto-saves/" t)
+(setq auto-save-file-name-transforms `((".*" "~/.emacs.d/auto-saves/" t)))
 
 ;; MELPA community packages
 ;; Initialize package sources
@@ -112,11 +137,7 @@
 
 ;; https://github.com/doomemacs/themes/tree/screenshots
 (use-package doom-themes
-  :init (load-theme 'doom-one t))
-  ;; :init (load-theme 'doom-one-light t))
-  ;; :init (load-theme 'doom-monokai-machine t))
-  ;; :init (load-theme 'doom-tomorrow-day t))
-  ;; :init (load-theme 'doom-opera-light t))
+  :init (load-theme (doulii/get-config theme 'doom-one-light) t))
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -325,8 +346,11 @@
 ;;     (setq persp-autokill-buffer-on-remove 'kill-weak)
 ;;     (add-hook 'window-setup-hook #'(lambda () (persp-mode 1)))))
 
+(use-package winner
+  :hook (after-init . winner-mode))
+
 (use-package exec-path-from-shell
-  :if (memq window-system '(mac ns x))
+  :if (memq window-system '(mac ns x pgtk))
   :config
   (dolist (var '("LANG" "LC_CTYPE" "LC_ALL"))
     (add-to-list 'exec-path-from-shell-variables var))
@@ -386,7 +410,7 @@
 				  (org-level-8 . 1.0)))
 	;;  (message "%s" (cdr face)))
 	;;  (set-face-attribute (car face) nil :font "YaHei Consolas Hybrid" :weight 'regular :height (cdr face)))
-	(set-face-attribute (car face) nil :font "FiraCode Nerd Font" :weight 'regular :height (cdr face)))
+	(set-face-attribute (car face) nil :family doulii/font-family :weight 'regular :height (cdr face)))
 
   ;; column view font size
   (set-face-attribute 'org-column nil :height 150)
@@ -511,8 +535,8 @@
   :config
   ;; add cmake sub project
   ;; https://github.com/bbatsov/projectile/issues/1130#issuecomment-1123237339
-  (dolist (e '("package.json" "meson.build" "CMakeLists.txt" ))
-        (add-to-list 'projectile-project-root-files-bottom-up e))
+  ;; (dolist (e '("package.json" "meson.build" "CMakeLists.txt" ))
+  ;;       (add-to-list 'projectile-project-root-files-bottom-up e))
   (add-to-list 'projectile-ignored-projects "/opt/homebrew/")
   (add-to-list 'projectile-ignored-projects "~/")
   (add-to-list 'projectile-globally-ignored-files "#*#"))
@@ -751,7 +775,12 @@
 
 (use-package lua-mode)
 
-(use-package typescript-mode)
+(use-package typescript-mode
+  :hook
+  (typescript-mode . (lambda ()
+                       (setq indent-tabs-mode nil
+                             tab-width 2
+                             typescript-indent-level 2))))
 
 (require 'dap-chrome)
 ;; run dap-chrome-setup
@@ -845,6 +874,49 @@ current buffer, killing it."
    :activation-fn (lsp-activate-on "build.sh" "*.subpackage.sh" "PKGBUILD"
                                    "*.install" "makepkg.conf" "*.ebuild" "*.eclass" "color.map" "make.conf")
    :server-id "termux"))
+
+;; dependency
+(use-package inheritenv
+  :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
+(use-package monet
+  :vc (:url "https://github.com/stevemolitor/monet" :rev :newest))
+
+(defun my-claude-display-right (buffer)
+  "Display Claude buffer in right side window."
+  (display-buffer buffer '((display-buffer-in-side-window)
+                           (side . right)
+                           (window-width . 75))))
+(add-to-list 'display-buffer-alist
+             '("^\\*claude"
+               (display-buffer-in-side-window)
+               (side . right)
+               (window-width . 75)))
+;; install claude-code.el
+(use-package claude-code :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :config
+  (setq claude-code-terminal-backend 'vterm)
+  ;; (setq claude-code-display-window-fn #'my-claude-display-right)
+
+  ;; optional IDE integration with Monet
+  (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+  (monet-mode 1)
+
+  (doulii/set-evil-keymap "c" claude-code-command-map)
+  ;; (claude-code-mode)
+  ;; :bind-keymap ("<leader> c" . claude-code-command-map)
+  :bind-keymap ("C-c c" . claude-code-command-map)
+
+  ;; Optionally define a repeat map so that "M" will cycle thru Claude auto-accept/plan/confirm modes after invoking claude-code-cycle-mode / C-c M.
+  ;; :bind
+  ;; (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode))
+  )
+
+(use-package plantuml-mode
+  :config
+  (setq plantuml-default-exec-mode 'executable)
+  (setq plantuml-output-type 'png)
+  )
 
 ;; See https://github.com/emacs-eaf/emacs-application-framework/wiki/Customization
 ;; (use-package eaf

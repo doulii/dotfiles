@@ -2,6 +2,18 @@
 #+PROPERTY: header-args:emacs-lisp :tangle init.el
 
 * 基础设置
+
+** Local
+#+begin_src emacs-lisp
+(load (locate-user-emacs-file "local.el") t)
+
+(defmacro doulii/get-config (name default)
+  (let ((sym (intern (concat "doulii/local/" (symbol-name name)))))
+    `(if (boundp ',sym)
+         ,sym
+       ,default)))
+#+end_src
+
 ** UI
 #+begin_src emacs-lisp
 (setq inhibit-startup-message t)
@@ -54,10 +66,10 @@
 ** 字体
 
 #+begin_src emacs-lisp
-;; (set-face-attribute 'default nil :font "Fira Code Retina" :height 280)
-;; (set-face-attribute 'default nil :font "WenQuanYi Zen Hei Mono" :height 160)
-(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 150)
-;; (set-face-attribute 'default nil :font "YaHei Consolas Hybrid" :height 150)
+(setq doulii/font-size (doulii/get-config font-size 150))
+(setq doulii/font-family (doulii/get-config font-family "FiraCode Nerd Font"))
+
+(set-face-attribute 'default nil :font doulii/font-family :height doulii/font-size)
 ;; (add-to-list 'default-frame-alist '(font . "Yahei Consolas Hybrid-12"))
 ;; (add-to-list 'default-frame-alist '(font . "WenQuanYi Zen Hei"))
 ;; (add-to-list 'default-frame-alist '(font . "WenQuanYi Zen Hei Mono-16"))
@@ -70,8 +82,8 @@
 
 
 ;; enable by `M-x variable-pitch-mode`
-(set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height 150)
-(set-face-attribute 'variable-pitch nil :font "YaHei Consolas Hybrid" :height 150 :weight 'regular)
+(set-face-attribute 'fixed-pitch nil :family doulii/font-family :height doulii/font-size)
+(set-face-attribute 'variable-pitch nil :family doulii/font-family :height doulii/font-size :weight 'regular)
 
 #+end_src
 
@@ -94,9 +106,30 @@
 move customize to seperate file
 
 #+begin_src emacs-lisp
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
-;; (load-file custom-file)
+(let ((custom-file-path (expand-file-name "custom.el" user-emacs-directory)))
+          ;; (make-directory custom-file-path t)
+          (setq custom-file custom-file-path)
+          (load custom-file))
+  ;; (load-file custom-file)
+#+end_src
+
+
+** 备份文件&auto save 文件
+#+begin_src emacs-lisp
+;; (let ((backup-dir-path (expand-file-name "backups/" user-emacs-directory)))
+;;   (make-directory backup-dir-path t)
+;;   (setq backup-directory-alist '(("." . ,backup-dir-path))))
+;; (setq make-backup-files t)
+
+;; (let ((auto-save-dir-path (expand-file-name "auto-saves/" user-emacs-directory)))
+;;   (setq auto-save-file-name-transforms `((".*" ,auto-save-dir-path t)))
+;;   (make-directory auto-save-dir-path t))
+
+;; (make-directory "~/.emacs.d/backups/" t)
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups/")))
+
+;; (make-directory "~/.emacs.d/auto-saves/" t)
+(setq auto-save-file-name-transforms `((".*" "~/.emacs.d/auto-saves/" t)))
 #+end_src
 
 * 包管理
@@ -152,11 +185,7 @@ move customize to seperate file
 
 ;; https://github.com/doomemacs/themes/tree/screenshots
 (use-package doom-themes
-  :init (load-theme 'doom-one t))
-  ;; :init (load-theme 'doom-one-light t))
-  ;; :init (load-theme 'doom-monokai-machine t))
-  ;; :init (load-theme 'doom-tomorrow-day t))
-  ;; :init (load-theme 'doom-opera-light t))
+  :init (load-theme (doulii/get-config theme 'doom-one-light) t))
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -395,6 +424,14 @@ leader-key是general定义的leader-key
 ;;     (add-hook 'window-setup-hook #'(lambda () (persp-mode 1)))))
 #+end_src
 
+
+
+** Winner mode
+#+begin_src emacs-lisp
+(use-package winner
+  :hook (after-init . winner-mode))
+#+end_src
+
 * 系统设置
 
 同步系统PATH设置
@@ -404,7 +441,7 @@ golang的环境变量使用 ~go env GOPATH~ ，但是在 ~.zshenv~ 中找不到g
 
 #+begin_src emacs-lisp
 (use-package exec-path-from-shell
-  :if (memq window-system '(mac ns x))
+  :if (memq window-system '(mac ns x pgtk))
   :config
   (dolist (var '("LANG" "LC_CTYPE" "LC_ALL"))
     (add-to-list 'exec-path-from-shell-variables var))
@@ -471,7 +508,7 @@ golang的环境变量使用 ~go env GOPATH~ ，但是在 ~.zshenv~ 中找不到g
 				  (org-level-8 . 1.0)))
 	;;  (message "%s" (cdr face)))
 	;;  (set-face-attribute (car face) nil :font "YaHei Consolas Hybrid" :weight 'regular :height (cdr face)))
-	(set-face-attribute (car face) nil :font "FiraCode Nerd Font" :weight 'regular :height (cdr face)))
+	(set-face-attribute (car face) nil :family doulii/font-family :weight 'regular :height (cdr face)))
 
   ;; column view font size
   (set-face-attribute 'org-column nil :height 150)
@@ -636,8 +673,8 @@ macOS依赖 =pngpaste=
   :config
   ;; add cmake sub project
   ;; https://github.com/bbatsov/projectile/issues/1130#issuecomment-1123237339
-  (dolist (e '("package.json" "meson.build" "CMakeLists.txt" ))
-        (add-to-list 'projectile-project-root-files-bottom-up e))
+  ;; (dolist (e '("package.json" "meson.build" "CMakeLists.txt" ))
+  ;;       (add-to-list 'projectile-project-root-files-bottom-up e))
   (add-to-list 'projectile-ignored-projects "/opt/homebrew/")
   (add-to-list 'projectile-ignored-projects "~/")
   (add-to-list 'projectile-globally-ignored-files "#*#"))
@@ -1054,7 +1091,12 @@ references:
 
 *** Javascript / Typescript
 #+begin_src emacs-lisp
-(use-package typescript-mode)
+(use-package typescript-mode
+  :hook
+  (typescript-mode . (lambda ()
+                       (setq indent-tabs-mode nil
+                             tab-width 2
+                             typescript-indent-level 2))))
 #+end_src
 
 - [[https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/][安装lsp]]
@@ -1218,7 +1260,7 @@ termux-language-server 通过venv安装, 并添加到PATH
 
 *** cluade
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 ;; dependency
 (use-package inheritenv
   :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
@@ -1282,6 +1324,15 @@ termux-language-server 通过venv安装, 并添加到PATH
 - Flycheck
 - 远程开发Tramp
 
+
+** PlantUML
+#+begin_src emacs-lisp
+(use-package plantuml-mode
+  :config
+  (setq plantuml-default-exec-mode 'executable)
+  (setq plantuml-output-type 'png)
+  )
+#+end_src
 
 * EAF
 

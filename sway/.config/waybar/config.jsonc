@@ -20,7 +20,7 @@
         "mpd",
         "idle_inhibitor",
         "pulseaudio",
-        "network",
+        // "network", // use network-manager-applet
         "power-profiles-daemon",
         "cpu",
         "memory",
@@ -225,7 +225,7 @@
 		"menu-actions": {
 			"logout": "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'",
 			"shutdown": "swaynag -t warning -m 'Do you really want to shutdown?' -B 'Yes, shutdown now' 'shutdown -h now'",
-			"reboot": "reboot",
+			"reboot": "swaynag -t warning -m 'Do you really want to reboot?' -B 'Yes, reboot now' 'reboot'",
 			"suspend": "systemctl suspend",
 			"hibernate": "systemctl hibernate",
 			"lock": "gtklock"
