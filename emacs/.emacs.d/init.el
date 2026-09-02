@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (load (locate-user-emacs-file "local.el") t)
 
 (defmacro doulii/get-config (name default)
@@ -455,12 +457,18 @@
 
 (with-eval-after-load 'org
   (require 'org-tempo)
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("go" . "src go"))
-  (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
-  (add-to-list 'org-structure-template-alist '("sql" . "src sql"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python")))
+  (dolist (tpl '(("sh"   . "src bash")
+                 ("el"   . "src emacs-lisp")
+                 ("go"   . "src go")
+                 ("scm"  . "src scheme")
+                 ("sql"  . "src sql")
+                 ("py"   . "src python")
+                 ("ini"  . "src ini")
+                 ("conf" . "src conf")
+                 ("json" . "src json")
+                 ("toml" . "src toml")
+                 ("yaml" . "src yaml")))
+    (add-to-list 'org-structure-template-alist tpl)))
 
 ;; org mode (Refer: org mode guide)
 (global-set-key (kbd "C-c l") #'org-store-link)
@@ -604,6 +612,7 @@
   (company-tooltip-align-annotations t)
   (company-selection-wrap-around t)
   (company-backends '((company-capf :with company-yasnippet)))
+  (company-transformers '(company-sort-by-occurrence))
   )
 
 ;; :bind (:map company-active-map
@@ -729,6 +738,11 @@
 ;; (use-package cmake-mode)
 
 (use-package meson-mode)
+
+(add-hook 'c-mode-hook
+          (lambda ()
+            (setq-local comment-start "// ")
+            (setq-local comment-end "")))
 
 (use-package auto-virtualenvwrapper)
 ;; :hook

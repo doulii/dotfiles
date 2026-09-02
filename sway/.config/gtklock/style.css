@@ -1,0 +1,8 @@
+window {
+  /* background-image: url("/usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png"); */
+  background-image: url("/home/li/.config/sway/background.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: black;
+}

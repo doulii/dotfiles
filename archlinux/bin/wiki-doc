@@ -1,0 +1,4 @@
+#!/bin/bash
+
+google-chrome-stable /usr/share/doc/arch-wiki/html/en/Main_page.html
+

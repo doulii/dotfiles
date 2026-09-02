@@ -1,0 +1,4 @@
+[options]
+upscaling = false
+scaling_mode = shrink
+
