@@ -184,6 +184,7 @@ exec swayidle -w \
     # Toggle the current focus between tiling and floating mode
     # bindsym $mod+Shift+space floating toggle
     bindsym $mod+Shift+f floating toggle
+    bindsym $mod+Shift+s sticky toggle
 
     # Swap focus between the tiling area and the floating area
     # bindsym $mod+space focus mode_toggle
@@ -314,4 +315,5 @@ exec wl-paste --type image --watch cliphist store
 bindsym $mod+Shift+v exec cliphist list | rofi -dmenu | cliphist decode | wl-copy && wtype -M ctrl -M shift v -m shift -m ctrl
 bindsym $mod+v exec cliphist list | rofi -dmenu | cliphist decode | wl-copy && wtype -M ctrl v -m ctrl
 
+bindsym $mod+i exec sh -c 'swaymsg -t get_tree | jq ".. | objects | select(.focused == true) | {id, name, app_id, window, class, instance, type, focused, floating, sticky, workspace, rect, window_rect}" > /tmp/sway-window-info.json; $term less /tmp/sway-window-info.json'
 

@@ -194,7 +194,7 @@
   ;; available in the *Completions* buffer, add it to the
   ;; `completion-list-mode-map'.
   :bind (:map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
+			  ("M-A" . marginalia-cycle))
 
   ;; The :init section is always executed.
   :init
@@ -301,14 +301,15 @@
   ;; Optionally make narrowing help available in the minibuffer.
   ;; You may want to use `embark-prefix-help-command' or which-key instead.
   ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
-)
+  )
 
 
 (use-package embark
   :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
+  (:map minibuffer-local-map
+   ("C-." . embark-act)         ;; pick some comfortable binding
    ("C-;" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+   ("C-h B" . embark-bindings))) ;; alternative for `describe-bindings'
 
   :init
 
@@ -460,7 +461,11 @@
   (doulii/set-evil-key "x" 'delete-window)
   (doulii/set-evil-key "k" 'kill-buffer)
   (doulii/set-evil-key "b" 'counsel-ibuffer)
-  (doulii/set-evil-key "s" 'save-buffer)
+  (doulii/set-evil-key "ss" 'save-buffer)
+  (doulii/set-evil-key "sr" 'consult-ripgrep)
+  (doulii/set-evil-key "sl" 'consult-line)
+  (doulii/set-evil-key "gi" 'consult-imenu)
+  (doulii/set-evil-key "go" 'consult-outline)
   (doulii/set-evil-key "dd" 'dap-debug-last)
   (doulii/set-evil-key "dr" 'dap-debug-restart)
   (doulii/set-evil-key "dq" 'dap-disconnect)
@@ -703,6 +708,7 @@
     (setq projectile-project-search-path '(("~/Projects" . 1))))
   (setq projectile-switch-project-action #'projectile-find-file)
   (setq projectile-enable-caching t)
+  (setq projectile-enable-cmake-presets t)
   :config
   ;; add cmake sub project
   ;; https://github.com/bbatsov/projectile/issues/1130#issuecomment-1123237339
