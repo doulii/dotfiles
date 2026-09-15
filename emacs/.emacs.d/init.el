@@ -412,6 +412,15 @@
 (defun doulii/set-evil-key (s f)
   (evil-define-key 'normal 'global (kbd (concat "<leader>" s)) f))
 
+;; (defun doulii/set-mode-evil-key (m s f)
+;;   (evil-define-key 'normal m (kbd (concat "<leader>" s)) f))
+(defmacro doulii/set-mode-evil-key (pkg s f)
+  (let ((mode-map (intern (format "%s-mode-map" pkg))))
+    `(with-eval-after-load ',pkg
+       (evil-define-key 'normal ,mode-map
+         (kbd (concat "<leader>" ,s))
+         ,f))))
+
 (defun doulii/set-evil-keymap (s map)
   (map-keymap
    (lambda (event binding)
@@ -485,7 +494,8 @@
   ;; (doulii/set-evil-keymap "c" claude-code-command-map)
   (doulii/set-evil-key "rb" 'revert-buffer)
   ;; (doulii/set-evil-keymap "l" line-edit-command-map) ;; 需要package ready以后才能读取变量
-  (doulii/set-evil-key ";" 'evil-repeat-find-char))
+  (doulii/set-evil-key ";" 'evil-repeat-find-char)
+  (doulii/set-mode-evil-key markdown "mp" 'markdown-preview-mode))
 
 
 ;; (use-package evil-collection
@@ -985,11 +995,13 @@
 ;; (mmm-mode . (lambda () (set-face-background 'mmm-default-submode-face "#fafafa"))))
 ;; (mmm-mode-hook . (lambda () (set-face-background 'mmm-default-submode-face nil))))
 
+;; global-prettier-mode会在markdown preview时也启动，导致报错
+;; (global-prettier-mode)
 (use-package prettier
   :config
   ;; (setq prettier-enabled-parsers (angular babel babel-flow babel-ts css elm espree flow graphql html java json json5 json-stringify less lua markdown mdx meriyah php postgresql pug python ruby scss sh solidity svelte swift toml typescript vue xml yaml))
   (setq prettier-enabled-parsers '(angular babel babel-flow babel-ts css elm espree flow graphql html java json-stringify less mdx meriyah php postgresql pug ruby scss sh solidity svelte swift typescript vue xml))
-  (global-prettier-mode))
+  )
 
 (use-package dart-mode)
 (use-package lsp-dart
@@ -1026,8 +1038,11 @@
 
 ;; (require 'lsp-java)
 ;; (add-hook 'java-mode-hook #'lsp)
-(use-package lsp-java
-  :hook (java-mode . lsp))
+;; (use-package lsp-java
+;;   :hook (java-mode . lsp))
+
+;; hooked by lsp-mode
+(use-package lsp-java)
 
 (use-package yaml-mode)
 
@@ -1048,6 +1063,19 @@ current buffer, killing it."
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
   (setq-default TeX-master nil))
+
+(use-package markdown-mode
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command '("pandoc" "--from=markdown" "--to=html5"))
+  :bind (:map markdown-mode-map
+			  ("C-c C-e" . markdown-do)))
+
+(use-package markdown-preview-mode
+  :init
+  (setq markdown-preview-stylesheets (list "http://thomasf.github.io/solarized-css/solarized-light.min.css"))
+  ;; :custom
+  ;; (doulii/set-mode-evil-key markdown-mode-map "mp" 'markdown-preview-mode)
+  )
 
 (use-package dockerfile-mode
   :ensure t)
