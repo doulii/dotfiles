@@ -564,19 +564,40 @@
 		'((sequence "TODO(t)" "DOING(i)" "PENDING(p)" "|" "DONE(d!)" "REJECTED(r)")
 		  (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
 
+  ;; GTD
+  (setq org-directory "~/docs/")
+  (setq org-agenda-files (directory-files-recursively
+                          "~/docs/"
+                          "\\.org$"
+                          nil
+                          (lambda (dir)
+                            (not (string= (file-name-nondirectory
+                                           (directory-file-name dir))
+                                          "archive")))))
+  (setq org-refile-targets '((org-agenda-files :maxlevel . 2)))
+  ;; (setq org-agenda-hide-tags-regexp ".") ;; hide tag
+  (setq org-agenda-prefix-format
+        '((agenda . " %i %-12:c%?-12t% s")
+          ;; (todo   . " %i %-12:c")
+          (todo   . " ")
+          (tags   . " %i %-12:c")
+          (search . " %i %-12:c")))
+
+  ;; (setq org-capture-templates
+  ;;       `(("i" "Inbox" entry  (file "inbox.org")
+  ;;          ,(concat "* TODO %?\n"
+  ;;                   "/Entered on/ %U"))))
+  (setq org-capture-templates
+        `(("i" "Inbox" entry  (file "inbox.org")
+           "* TODO %?\n  %U" :empty-lines 1)))
   ;; TODO
   ;; Custom agenda view
   ;; https://github.com/daviwil/emacs-from-scratch/blob/5e1f99448e32852277e2d274ce2057d55b8c7aaf/init.el#L300
   ;; Capture templates
-  (setq org-capture-templates
-		`(("t" "Tasks / Projects")
-		  ("tt" "Task" entry (file+olp "~/Nextcloud/OrgMode/Tasks.org" "Inbox")
-		   "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)))
-
-  ;; (setq org-agenda-files '("~/Nextcloud/OrgMode/wiki/editors/emacs/emacs-from-scratch.org"))
-  ;; (setq org-agenda-files '("~/Nextcloud/OrgMode/"))
-  (setq org-agenda-files (directory-files-recursively "~/Nextcloud/OrgMode/" "\\.org$"))
-  (setq org-directory "~/Nextcloud/OrgMode/")
+  ;; (setq org-capture-templates
+  ;; 		`(("t" "Tasks / Projects")
+  ;; 		  ("tt" "Task" entry (file+olp "~/docs/inbox.org" "Inbox")
+  ;; 		   "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)))
 
   ;; LaTeX preview scale
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
@@ -643,6 +664,7 @@
                  ("scm"  . "src scheme")
                  ("sql"  . "src sql")
                  ("py"   . "src python")
+                 ("df"   . "src dockerfile")
                  ("ini"  . "src ini")
                  ("conf" . "src conf")
                  ("json" . "src json")
@@ -654,6 +676,14 @@
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c c") #'org-capture)
+
+(defun doulii/org-capture-inbox ()
+  (interactive)
+  (call-interactively 'org-store-link)
+  (org-capture nil "i"))
+;; (define-key global-map (kbd "C-c i") 'org-capture-inbox)
+(doulii/set-evil-key "ci" 'doulii/org-capture-inbox) ;; TODO
+(add-hook 'org-capture-mode-hook 'delete-other-windows)
 
 ;; 自动展开加粗斜体等marker
 (use-package org-appear
@@ -716,6 +746,8 @@
   :init
   (when (file-directory-p "~/Projects")
     (setq projectile-project-search-path '(("~/Projects" . 1))))
+  (when (file-directory-p "~/projects")
+    (setq projectile-project-search-path '(("~/projects" . 1))))
   (setq projectile-switch-project-action #'projectile-find-file)
   (setq projectile-enable-caching t)
   (setq projectile-enable-cmake-presets t)
@@ -1122,7 +1154,7 @@ current buffer, killing it."
   (doulii/set-evil-keymap "c" claude-code-command-map)
   ;; (claude-code-mode)
   ;; :bind-keymap ("<leader> c" . claude-code-command-map)
-  :bind-keymap ("C-c c" . claude-code-command-map)
+  ;; :bind-keymap ("C-c c" . claude-code-command-map)
 
   ;; Optionally define a repeat map so that "M" will cycle thru Claude auto-accept/plan/confirm modes after invoking claude-code-cycle-mode / C-c M.
   ;; :bind
