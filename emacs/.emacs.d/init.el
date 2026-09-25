@@ -100,6 +100,8 @@
 ;; (make-directory "~/.emacs.d/auto-saves/" t)
 (setq auto-save-file-name-transforms `((".*" "~/.emacs.d/auto-saves/" t)))
 
+;; (desktop-save-mode 1)
+
 ;; MELPA community packages
 ;; Initialize package sources
 (require 'package)

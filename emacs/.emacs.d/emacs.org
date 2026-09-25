@@ -138,6 +138,12 @@ move customize to seperate file
 (setq auto-save-file-name-transforms `((".*" "~/.emacs.d/auto-saves/" t)))
 #+end_src
 
+
+** Session restore by desktop.el
+#+begin_src emacs-lisp
+;; (desktop-save-mode 1)
+#+end_src
+
 * 包管理
 #+begin_src emacs-lisp
 ;; MELPA community packages

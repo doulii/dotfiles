@@ -1,2 +1,4 @@
 [font]
+# normal = { family = "Yahei Consolas Hybrid", style = "Regular" }
+normal = { family = "FiraCode Nerd Font", style = "Regular" }
 size = 16
