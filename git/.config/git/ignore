@@ -1,0 +1,6 @@
+# global git ignore
+# https://git-scm.com/docs/gitignore
+
+_local/
+**/.claude/settings.local.json
+

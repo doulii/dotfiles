@@ -21,21 +21,6 @@
 ;; 窗口无边框
 ;; (add-to-list 'default-frame-alist '(undecorated . t))
 
-
-;; Themes
-;; https://emacsthemes.com/
-;;
-;; (load-theme 'tango-dark)
-;; (load-theme 'wombat)
-;; (load-theme 'doom-solarized-dark)
-;; (load-theme 'doom-tomorrow-night)
-;; (load-theme 'doom-monokai-classic) ;; 背景偏黄
-;; (load-theme 'doom-monokai-octagon) ;; 太蓝
-;; (load-theme 'doom-monokai-pro) ;; 太黄
-;; (load-theme 'doom-monokai-ristretto) ;; 比pro更黄
-;; (load-theme 'doom-monokai-machine t) ;; 还行 有点蓝
-;; (load-theme 'doom-monokai-spectrum) ;; 还行 偏暗
-
 (setq-default tab-width 4)
 
 (column-number-mode)
@@ -140,6 +125,8 @@
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
 
+;; Themes
+;; https://emacsthemes.com/
 ;; https://github.com/doomemacs/themes/tree/screenshots
 (use-package doom-themes
   :init (load-theme (doulii/get-config theme 'doom-one-light) t))
@@ -746,10 +733,12 @@
   :custom ((projectile-completion-system 'ivy))
   :bind-keymap ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/Projects")
-    (setq projectile-project-search-path '(("~/Projects" . 1))))
-  (when (file-directory-p "~/projects")
-    (setq projectile-project-search-path '(("~/projects" . 1))))
+  ;; (when (file-directory-p "~/Projects")
+  ;;   (setq projectile-project-search-path '(("~/Projects" . 1))))
+  ;; (when (file-directory-p "~/projects")
+  ;;   (setq projectile-project-search-path '(("~/projects" . 1)
+  ;;                                          ("~/projects/digital-brain" . 1))))
+  (setq projectile-project-search-path (doulii/get-config project-dirs '(("~/projects" . 1))))
   (setq projectile-switch-project-action #'projectile-find-file)
   (setq projectile-enable-caching t)
   (setq projectile-enable-cmake-presets t)
@@ -916,6 +905,7 @@
          (dart-mode . lsp-deferred)
          (meson-mode . lsp-deferred)
          (typescript-mode . lsp-deferred)
+         (js-ts-mode . lsp-deferred)
          (vue-mode . lsp-deferred)
          (lsp-mode . doulii/lsp-mode-setup)))
 ;; (lsp-completion-mode . doulii/lsp-completion-hook)
@@ -1014,6 +1004,9 @@
                        (setq indent-tabs-mode nil
                              tab-width 2
                              typescript-indent-level 2))))
+
+(add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.cjs\\'" . js-ts-mode))
 
 (require 'dap-chrome)
 ;; run dap-chrome-setup
