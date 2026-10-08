@@ -1162,6 +1162,8 @@ current buffer, killing it."
   (setq plantuml-output-type 'png)
   )
 
+(use-package kdl-mode)
+
 ;; See https://github.com/emacs-eaf/emacs-application-framework/wiki/Customization
 ;; (use-package eaf
 ;;   :init ((setq eaf-python-command "~/.emacs.d/site-lisp/emacs-application-framework/venv/bin/python3"))

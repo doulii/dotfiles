@@ -1644,6 +1644,12 @@ termux-language-server 通过venv安装, 并添加到PATH
   )
 #+end_src
 
+
+** KDL
+#+begin_src emacs-lisp
+(use-package kdl-mode)
+#+end_src
+
 * EAF
 
 #+begin_src emacs-lisp
