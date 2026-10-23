@@ -234,7 +234,7 @@
 		"menu": "on-click",
 		"menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
 		"menu-actions": {
-			"logout": "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'",
+			"logout": "$HOME/.config/waybar/scripts/logout.sh",
 			"shutdown": "swaynag -t warning -m 'Do you really want to shutdown?' -B 'Yes, shutdown now' 'shutdown -h now'",
 			"reboot": "swaynag -t warning -m 'Do you really want to reboot?' -B 'Yes, reboot now' 'reboot'",
 			"suspend": "systemctl suspend",
