@@ -1,12 +1,13 @@
 * dotfiles 个人配置
 
-使用[[https://www.gnu.org/software/stow/][stow]]安装，如安装emacs配置
+使用make安装和取消
 
 #+begin_src shell
-stow emacs
+make emacs              # 安装sway  => stow emacs
+make uninstall-emacs    # 取消安装   => stow -D emacs
 #+end_src
 
-[[https://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][参考]]
+参考 [[https://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][using-gnu-stow-to-manage-your-dotfiles]] 使用 [[https://www.gnu.org/software/stow/][stow]] 实现安装，make负责处理依赖
 
 ** =~/.env.d=
 

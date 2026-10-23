@@ -4,3 +4,7 @@
 \#*\#
 
 # *-local*
+
+local*
+*.local
+*.jpg
