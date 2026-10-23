@@ -15,7 +15,8 @@ set $up k
 set $right l
 # Your preferred terminal emulator
 # set $term foot
-set $term kitty
+# set $term kitty
+set $term alacritty
 # Your preferred application launcher
 set $menu wmenu-run
 
@@ -265,6 +266,7 @@ bar {
 }
 
 include /etc/sway/config.d/*
+include ~/.config/sway/config.d/*.conf
 
 
 # auto start
@@ -278,6 +280,7 @@ default_border pixel 4
 for_window [shell="xdg_shell"] default_border pixel 4
 for_window [shell="xwayland"] title_format "[XWayland] %title"
 
+for_window [app_id="imv"] floating enable
 
 # default workspace for applications
 # https://i3wm.org/docs/userguide.html#assign_workspace

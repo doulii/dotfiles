@@ -1539,6 +1539,10 @@ current buffer, killing it."
   ;; :custom
   ;; (doulii/set-mode-evil-key markdown-mode-map "mp" 'markdown-preview-mode)
   )
+
+(use-package mermaid-mode
+  :config
+  (setq mermaid-output-format ".svg"))
 #+end_src
 
 ** Docker
